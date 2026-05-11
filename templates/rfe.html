@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+{% block title %}RFE — Recursive Feature Elimination{% endblock %}
+{% block page_name %}Recursive Feature Elimination{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="hero-blob-1"></div>
+  <div class="hero-blob-2"></div>
+  <div class="max-w">
+    <div data-aos="fade-up">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+        <a href="/" style="font-size:0.83rem;color:var(--text-muted);text-decoration:none;">Home</a>
+        <span style="color:var(--text-muted);">/</span>
+        <span style="font-size:0.83rem;font-weight:600;color:var(--accent2);">Feature Selection</span>
+      </div>
+      <div class="hero-chip" style="background:rgba(6,182,212,0.1);color:var(--accent2);">🎯 Module 11 · Feature Selection</div>
+      <h1 class="hero-title">Recursive Feature <span style="color:var(--accent2);">Elimination</span></h1>
+      <p class="hero-desc">Use a model's feature importances to iteratively remove the weakest features — repeatedly retraining until only the most powerful features remain.</p>
+    </div>
+  </div>
+</div>
+
+<div class="max-w" style="padding-top:48px;padding-bottom:80px;">
+  <div class="content-grid">
+    <div style="display:flex;flex-direction:column;gap:48px;">
+
+      <div data-aos="fade-up">
+        <div class="section-label">The Concept</div>
+        <h2 class="section-title">Recursion + <span class="g">Model Insight</span></h2>
+        <p class="section-desc" style="margin-bottom:14px;">RFE uses an estimator that exposes <strong style="color:var(--text);">feature importances</strong> (like a linear model's coefficients or a tree's feature_importances_). It fits the model, ranks features by importance, removes the bottom n, then repeats — recursively.</p>
+        <p class="section-desc">The key advantage over Backward Elimination: RFE uses the model's own understanding of importance, not just p-values. It works with any estimator (SVM, Random Forest, Gradient Boosting) — not just linear models.</p>
+      </div>
+
+      <div data-aos="fade-up">
+        <div class="section-label">Real-World Examples</div>
+        <h2 class="section-title">RFE <span class="g">in Action</span></h2>
+        <div class="example-grid">
+          <div class="example-card">
+            <div class="example-tag">🧬 Genomics</div>
+            <div class="example-title">Gene Expression Selection</div>
+            <div class="example-desc">With 20,000+ genes as features, RFE with SVM selects the top 50 most discriminative genes for disease classification. The model iteratively drops the least informative genes each round.</div>
+          </div>
+          <div class="example-card">
+            <div class="example-tag">📊 Finance</div>
+            <div class="example-title">Stock Return Prediction</div>
+            <div class="example-desc">Starting with 200 technical indicators, RFE with a gradient boosted tree selects the 15 most predictive indicators — removing noise and improving out-of-sample performance.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE DEMO -->
+      <div data-aos="fade-up">
+        <div class="section-label">🎮 Interactive Demo</div>
+        <h2 class="section-title">RFE <span class="g">Elimination Pyramid</span></h2>
+        <p class="section-desc" style="margin-bottom:20px;">Use the slider to set how many features to keep. Watch the pyramid animate as features are ranked and eliminated round by round!</p>
+        
+        <div class="demo-card">
+          <div class="demo-header">
+            <div class="demo-dot" style="background:#ef4444;"></div>
+            <div class="demo-dot" style="background:#f59e0b;"></div>
+            <div class="demo-dot" style="background:#10b981;"></div>
+            <span style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-left:8px;">rfe_demo.py</span>
+          </div>
+          <div class="demo-body">
+            <div style="display:flex;align-items:center;gap:20px;margin-bottom:20px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:200px;">
+                <label>Features to Keep: <strong id="k-label" style="color:var(--accent);">5</strong></label>
+                <input type="range" id="k-slider" min="1" max="10" value="5" oninput="document.getElementById('k-label').textContent=this.value;runRFE();" style="width:100%;margin-top:8px;"/>
+              </div>
+              <div style="flex:1;min-width:200px;">
+                <label>Estimator</label>
+                <select id="est-sel" onchange="runRFE()" style="margin-top:8px;">
+                  <option value="linear">Linear Regression</option>
+                  <option value="tree">Decision Tree</option>
+                  <option value="svm">Support Vector Machine</option>
+                </select>
+              </div>
+              <div style="padding-top:22px;">
+                <button class="btn-primary" onclick="runRFEAnimated()">▶ Animate RFE</button>
+              </div>
+            </div>
+
+            <!-- Feature importance bars -->
+            <div id="importance-bars" style="margin-bottom:20px;"></div>
+            
+            <!-- Pyramid / elimination rounds -->
+            <div id="rfe-rounds" style="display:flex;flex-direction:column;gap:10px;align-items:center;"></div>
+            
+            <div id="rfe-summary" style="margin-top:16px;padding:16px;border-radius:14px;background:rgba(79,70,229,0.08);border:1.5px solid rgba(79,70,229,0.2);display:none;">
+              <div class="section-label" style="margin-bottom:8px;">✅ Final Selected Features</div>
+              <div id="final-features" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div data-aos="fade-up">
+        <div class="section-label">Python Code</div>
+        <h2 class="section-title">sklearn <span class="g">RFE</span></h2>
+        <div class="code-block">
+<span class="kw">from</span> sklearn.feature_selection <span class="kw">import</span> RFE, RFECV<br/>
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier<br/><br/>
+estimator = <span class="fn">RandomForestClassifier</span>(n_estimators=<span class="num">100</span>)<br/><br/>
+<span class="cm"># RFE: specify number of features to keep</span><br/>
+rfe = <span class="fn">RFE</span>(estimator, n_features_to_select=<span class="num">5</span>, step=<span class="num">1</span>)<br/>
+rfe.<span class="fn">fit</span>(X_train, y_train)<br/>
+selected = X.columns[rfe.support_]<br/><br/>
+<span class="cm"># RFECV: auto-selects best k using cross-validation</span><br/>
+rfecv = <span class="fn">RFECV</span>(estimator, step=<span class="num">1</span>, cv=<span class="num">5</span>)<br/>
+rfecv.<span class="fn">fit</span>(X_train, y_train)<br/>
+print(<span class="str">f"Optimal features: {rfecv.n_features_}"</span>)
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="key-terms-box" data-aos="fade-left">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:16px;">🔑 Key Terms</div>
+        <div class="key-term-item">
+          <div class="key-term-badge">RFE</div>
+          <div><div class="key-term-name">Recursive Feature Elimination</div><div class="key-term-def">Fits a model, removes weakest features, repeats — until target feature count reached.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">RFECV</div>
+          <div><div class="key-term-name">RFE with Cross-Validation</div><div class="key-term-def">Like RFE but automatically selects the optimal number of features using CV scoring.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">step</div>
+          <div><div class="key-term-name">Step Parameter</div><div class="key-term-def">How many features to remove per round. step=1 is safest; step=5 is faster for large datasets.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">coef_/importances_</div>
+          <div><div class="key-term-name">Feature Importance Source</div><div class="key-term-def">Linear models use |coef_|; tree models use feature_importances_. SVM uses |coef_| for linear kernel.</div></div>
+        </div>
+      </div>
+      <div class="card card-pad" data-aos="fade-left" data-aos-delay="100">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.9rem;margin-bottom:10px;color:var(--text);">⚖️ RFE vs Others</div>
+        {% set comp = [('RFE','Model-based, any estimator, slower'),('Backward Elim.','OLS p-values, linear models only'),('Correlation','No model needed, very fast'),('Forward Sel.','Builds up, not down')] %}
+        {% for name, desc in comp %}
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:0.82rem;">
+          <span style="font-weight:700;color:var(--accent);font-family:'DM Mono',monospace;">{{ name }}</span>
+          <div style="color:var(--text-muted);font-size:0.78rem;margin-top:2px;">{{ desc }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const allRFEFeatures = [
+  { name: 'area_sqft',       icon: '📐', scores: { linear: 0.82, tree: 0.78, svm: 0.85 } },
+  { name: 'location_score',  icon: '📍', scores: { linear: 0.71, tree: 0.65, svm: 0.70 } },
+  { name: 'num_bedrooms',    icon: '🛏️', scores: { linear: 0.55, tree: 0.60, svm: 0.52 } },
+  { name: 'age_years',       icon: '🏛️', scores: { linear: 0.48, tree: 0.52, svm: 0.44 } },
+  { name: 'garage_size',     icon: '🚗', scores: { linear: 0.38, tree: 0.41, svm: 0.35 } },
+  { name: 'floor_num',       icon: '🏢', scores: { linear: 0.28, tree: 0.30, svm: 0.25 } },
+  { name: 'near_park',       icon: '🌳', scores: { linear: 0.21, tree: 0.18, svm: 0.20 } },
+  { name: 'paint_color',     icon: '🎨', scores: { linear: 0.12, tree: 0.09, svm: 0.11 } },
+  { name: 'lot_shape_code',  icon: '📏', scores: { linear: 0.07, tree: 0.05, svm: 0.08 } },
+  { name: 'owner_age',       icon: '👤', scores: { linear: 0.03, tree: 0.02, svm: 0.04 } },
+];
+
+function getEst() { return document.getElementById('est-sel').value; }
+function getK() { return parseInt(document.getElementById('k-slider').value); }
+
+function runRFE() {
+  const est = getEst();
+  const k = getK();
+  const scored = allRFEFeatures.map(f=>({...f, score: f.scores[est]})).sort((a,b)=>b.score-a.score);
+  
+  // Draw importance bars
+  const maxScore = scored[0].score;
+  document.getElementById('importance-bars').innerHTML = `
+    <div class="section-label" style="margin-bottom:8px;">Feature Importance Scores (${est})</div>
+    ${scored.map((f,i)=>`
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+        <span style="font-size:0.9rem;width:22px;">${f.icon}</span>
+        <div style="font-family:'DM Mono',monospace;font-size:0.75rem;width:130px;color:${i<k?'var(--accent)':'var(--text-muted)'};font-weight:${i<k?'700':'400'};">${f.name}</div>
+        <div style="flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;">
+          <div style="height:100%;width:${(f.score/maxScore)*100}%;background:${i<k?'var(--accent)':'rgba(148,163,184,0.4)'};border-radius:4px;transition:width 0.4s ease;"></div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:0.72rem;width:36px;text-align:right;color:${i<k?'var(--accent)':'var(--text-muted)'};">${f.score.toFixed(2)}</div>
+        <span style="font-size:0.68rem;font-weight:700;padding:2px 7px;border-radius:5px;width:52px;text-align:center;background:${i<k?'rgba(79,70,229,0.12)':'rgba(148,163,184,0.12)'};color:${i<k?'var(--accent)':'var(--text-muted)'};">${i<k?'KEEP':'DROP'}</span>
+      </div>`).join('')}`;
+  
+  // Build rounds
+  let remaining = [...scored];
+  const rounds = [];
+  while (remaining.length > k) {
+    const remove = remaining[remaining.length-1];
+    remaining = remaining.slice(0,-1);
+    rounds.push({ removed: remove, remaining: [...remaining] });
+  }
+  
+  document.getElementById('rfe-rounds').innerHTML = rounds.map((r,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;width:${Math.max(40,(100-(i*6)))}%;transition:width 0.5s;flex-wrap:wrap;">
+      <div style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--text-muted);white-space:nowrap;min-width:60px;">Round ${i+1}</div>
+      <div style="flex:1;display:flex;flex-wrap:wrap;gap:4px;">
+        ${r.remaining.map(f=>`<span style="padding:3px 9px;border-radius:6px;background:rgba(79,70,229,0.1);color:var(--accent);font-family:'DM Mono',monospace;font-size:0.72rem;font-weight:700;">${f.icon} ${f.name}</span>`).join('')}
+        <span style="padding:3px 9px;border-radius:6px;background:rgba(239,68,68,0.1);color:#ef4444;font-family:'DM Mono',monospace;font-size:0.72rem;text-decoration:line-through;">❌ ${r.removed.name}</span>
+      </div>
+    </div>
+  `).join('');
+  
+  // Summary
+  document.getElementById('final-features').innerHTML = scored.slice(0,k).map(f=>`
+    <span style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;background:var(--accent-light);color:var(--accent);font-family:'DM Mono',monospace;font-size:0.8rem;font-weight:700;border:1.5px solid rgba(79,70,229,0.25);">${f.icon} ${f.name}</span>
+  `).join('');
+  document.getElementById('rfe-summary').style.display='block';
+}
+
+async function runRFEAnimated() {
+  const est = getEst();
+  const k = getK();
+  const scored = allRFEFeatures.map(f=>({...f, score: f.scores[est]})).sort((a,b)=>b.score-a.score);
+  let remaining = [...scored];
+  
+  while (remaining.length > k) {
+    const remove = remaining[remaining.length-1];
+    remaining = remaining.slice(0,-1);
+    document.getElementById('k-slider').value = remaining.length;
+    document.getElementById('k-label').textContent = remaining.length;
+    runRFE();
+    await new Promise(r=>setTimeout(r,600));
+  }
+}
+
+runRFE();
+</script>
+{% endblock %}

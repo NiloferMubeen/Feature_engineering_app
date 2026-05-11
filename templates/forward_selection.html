@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+{% block title %}Forward Selection — Feature Selection{% endblock %}
+{% block page_name %}Forward Selection{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="hero-blob-1"></div>
+  <div class="hero-blob-2"></div>
+  <div class="max-w">
+    <div data-aos="fade-up">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+        <a href="/" style="font-size:0.83rem;color:var(--text-muted);text-decoration:none;">Home</a>
+        <span style="color:var(--text-muted);">/</span>
+        <span style="font-size:0.83rem;font-weight:600;color:var(--accent2);">Feature Selection</span>
+      </div>
+      <div class="hero-chip" style="background:rgba(6,182,212,0.1);color:var(--accent2);">🎯 Module 09 · Feature Selection</div>
+      <h1 class="hero-title">Forward <span style="color:var(--accent2);">Selection</span></h1>
+      <p class="hero-desc">Start with zero features and greedily add the one that improves model performance the most — step by step, until adding more features stops helping.</p>
+    </div>
+  </div>
+</div>
+
+<div class="max-w" style="padding-top:48px;padding-bottom:80px;">
+  <div class="content-grid">
+    <div style="display:flex;flex-direction:column;gap:48px;">
+
+      <div data-aos="fade-up">
+        <div class="section-label">The Concept</div>
+        <h2 class="section-title">Building from <span class="g">Scratch</span></h2>
+        <p class="section-desc" style="margin-bottom:14px;">Forward Selection is a <strong style="color:var(--text);">greedy wrapper method</strong>. At each step, it tries adding every remaining feature to the current set, evaluates model performance with each, and keeps the one that gives the best improvement.</p>
+        <p class="section-desc">It stops when no feature improves performance above a threshold, or when a maximum number of features is reached. The result: a lean, high-performance feature set built from the ground up.</p>
+      </div>
+
+      <div data-aos="fade-up">
+        <div class="section-label">Real-World Examples</div>
+        <h2 class="section-title">Forward Selection <span class="g">in Action</span></h2>
+        <div class="example-grid">
+          <div class="example-card">
+            <div class="example-tag">🏠 House Price</div>
+            <div class="example-title">Starting from Zero</div>
+            <div class="example-desc">Step 1: area_sqft gives R²=0.72. Step 2: adding num_bedrooms → R²=0.79. Step 3: adding location → R²=0.86. Step 4: adding paint_color → R²=0.86 (no gain — stop!).</div>
+          </div>
+          <div class="example-card">
+            <div class="example-tag">💳 Credit Scoring</div>
+            <div class="example-title">Regulatory Compliance</div>
+            <div class="example-desc">Banks use Forward Selection when they need to explain which factors drive credit decisions — the greedy selection creates an interpretable, minimal set of the most impactful features.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE DEMO -->
+      <div data-aos="fade-up">
+        <div class="section-label">🎮 Interactive Demo</div>
+        <h2 class="section-title">Step-by-Step <span class="g">Forward Selection</span></h2>
+        <p class="section-desc" style="margin-bottom:20px;">Click "Add Best Feature" to greedily build your feature set one step at a time. Watch accuracy climb with each addition!</p>
+        
+        <div class="demo-card">
+          <div class="demo-header">
+            <div class="demo-dot" style="background:#ef4444;"></div>
+            <div class="demo-dot" style="background:#f59e0b;"></div>
+            <div class="demo-dot" style="background:#10b981;"></div>
+            <span style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-left:8px;">forward_selection.py</span>
+          </div>
+          <div class="demo-body">
+            <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px;">
+              <div style="flex:1;min-width:200px;">
+                <div class="section-label" style="margin-bottom:8px;">Available Features</div>
+                <div id="available-pool" style="display:flex;flex-direction:column;gap:6px;"></div>
+              </div>
+              <div style="flex:1;min-width:200px;">
+                <div class="section-label" style="margin-bottom:8px;">Selected Features</div>
+                <div id="selected-pool" style="display:flex;flex-direction:column;gap:6px;min-height:200px;background:var(--surface2);border-radius:12px;padding:12px;border:2px dashed var(--accent);">
+                  <div id="selected-empty" style="color:var(--text-muted);font-size:0.82rem;text-align:center;padding:20px;">No features selected yet</div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-bottom:20px;">
+              <button class="btn-primary" onclick="addBestFeature()" id="add-btn">➕ Add Best Feature</button>
+              <button class="btn-outline" onclick="resetSelection()">↺ Reset</button>
+            </div>
+            <canvas id="acc-chart" width="600" height="160" style="width:100%;border-radius:12px;background:var(--surface2);display:block;"></canvas>
+            <div id="step-log" style="margin-top:16px;display:flex;flex-direction:column;gap:6px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div data-aos="fade-up">
+        <div class="section-label">Python Code</div>
+        <h2 class="section-title">mlxtend <span class="g">Implementation</span></h2>
+        <div class="code-block">
+<span class="kw">from</span> mlxtend.feature_selection <span class="kw">import</span> SequentialFeatureSelector<span class="kw"> as</span> SFS<br/>
+<span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> LinearRegression<br/><br/>
+sfs = <span class="fn">SFS</span>(LinearRegression(),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;k_features=<span class="str">'best'</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;forward=<span class="kw">True</span>,&nbsp;<span class="cm"># ← Forward Selection</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;floating=<span class="kw">False</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;scoring=<span class="str">'r2'</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;cv=<span class="num">5</span><br/>
+)<br/>
+sfs.<span class="fn">fit</span>(X_train, y_train)<br/>
+selected = list(sfs.k_feature_names_)
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="key-terms-box" data-aos="fade-left">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:16px;">🔑 Key Terms</div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Wrapper</div>
+          <div><div class="key-term-name">Wrapper Method</div><div class="key-term-def">Uses a model to evaluate feature subsets — more accurate than filter methods but computationally expensive.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Greedy</div>
+          <div><div class="key-term-name">Greedy Algorithm</div><div class="key-term-def">Makes the locally optimal choice at each step. Fast but may not find the globally optimal feature set.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Stopping Rule</div>
+          <div><div class="key-term-name">Stopping Criterion</div><div class="key-term-def">When to stop adding features: no improvement threshold, max features limit, or CV score plateau.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">SFS</div>
+          <div><div class="key-term-name">Sequential Feature Selection</div><div class="key-term-def">sklearn's implementation of both forward and backward selection methods.</div></div>
+        </div>
+      </div>
+      <div class="card card-pad" data-aos="fade-left" data-aos-delay="100">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.9rem;margin-bottom:10px;color:var(--text);">⚡ Complexity Note</div>
+        <p class="section-desc">With k features, forward selection requires evaluating O(k²) models. For 100 features → ~5050 model fits. Use with fast models (linear, tree) or small datasets.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const allFeatures = [
+  { name: 'area_sqft',      gain: 0.72, icon: '📐', desc: 'Living area in square feet' },
+  { name: 'num_bedrooms',   gain: 0.08, icon: '🛏️', desc: 'Number of bedrooms' },
+  { name: 'location_score', gain: 0.07, icon: '📍', desc: 'Neighborhood quality score' },
+  { name: 'age_years',      gain: 0.05, icon: '🏛️', desc: 'Age of the property' },
+  { name: 'garage_size',    gain: 0.03, icon: '🚗', desc: 'Garage capacity' },
+  { name: 'floor_num',      gain: 0.02, icon: '🏢', desc: 'Floor number' },
+  { name: 'paint_color',    gain: 0.005, icon: '🎨', desc: 'Exterior paint color code' },
+  { name: 'near_school',    gain: 0.004, icon: '🏫', desc: 'Distance to nearest school' },
+];
+
+let available = [...allFeatures];
+let selected = [];
+let accHistory = [0];
+
+function renderPools() {
+  const avEl = document.getElementById('available-pool');
+  avEl.innerHTML = available.map((f,i)=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:var(--surface2);border:1.5px solid var(--border);font-size:0.83rem;">
+      <span>${f.icon}</span>
+      <div style="flex:1;">
+        <div style="font-family:'DM Mono',monospace;font-weight:700;font-size:0.78rem;color:var(--text);">${f.name}</div>
+        <div style="font-size:0.72rem;color:var(--text-muted);">${f.desc}</div>
+      </div>
+      <span style="font-size:0.72rem;color:var(--text-muted);">+${(f.gain*100).toFixed(1)}%</span>
+    </div>
+  `).join('');
+  
+  const selEl = document.getElementById('selected-pool');
+  if (selected.length === 0) {
+    selEl.innerHTML = '<div id="selected-empty" style="color:var(--text-muted);font-size:0.82rem;text-align:center;padding:20px;">No features selected yet</div>';
+  } else {
+    selEl.innerHTML = selected.map((f,i)=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:rgba(79,70,229,0.08);border:1.5px solid rgba(79,70,229,0.3);font-size:0.83rem;animation:msgIn 0.3s ease;">
+        <span style="font-family:'DM Mono',monospace;font-weight:800;font-size:0.72rem;background:var(--accent);color:white;padding:2px 7px;border-radius:5px;">${i+1}</span>
+        <span>${f.icon}</span>
+        <div style="flex:1;"><div style="font-family:'DM Mono',monospace;font-weight:700;font-size:0.78rem;color:var(--accent);">${f.name}</div></div>
+      </div>
+    `).join('');
+  }
+  document.getElementById('add-btn').disabled = available.length === 0;
+  if (available.length === 0) document.getElementById('add-btn').textContent = '✅ All Features Added';
+  drawAccChart();
+}
+
+function addBestFeature() {
+  if (!available.length) return;
+  // Sort by gain, pick best
+  available.sort((a,b)=>b.gain-a.gain);
+  const best = available.shift();
+  selected.push(best);
+  const lastAcc = accHistory[accHistory.length-1];
+  accHistory.push(Math.min(0.98, lastAcc + best.gain));
+  
+  // Add log entry
+  const log = document.getElementById('step-log');
+  const entry = document.createElement('div');
+  entry.style.cssText='padding:10px 14px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:10px;font-size:0.82rem;animation:msgIn 0.3s ease;';
+  entry.innerHTML=`<strong style="color:#10b981;">Step ${selected.length}:</strong> Added <code style="color:var(--accent);font-family:'DM Mono',monospace;">${best.name}</code> → Accuracy: <strong>${(accHistory[accHistory.length-1]*100).toFixed(1)}%</strong> (+${(best.gain*100).toFixed(1)}%)`;
+  log.appendChild(entry);
+  renderPools();
+}
+
+function resetSelection() {
+  available = [...allFeatures];
+  selected = [];
+  accHistory = [0];
+  document.getElementById('step-log').innerHTML = '';
+  document.getElementById('add-btn').textContent = '➕ Add Best Feature';
+  renderPools();
+}
+
+function drawAccChart() {
+  const canvas = document.getElementById('acc-chart');
+  const ctx = canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const isDark=document.documentElement.classList.contains('dark');
+  const PAD={l:50,r:20,t:20,b:30};
+  if(accHistory.length<2) return;
+  const n=accHistory.length;
+  const toX=i=>PAD.l+i*(W-PAD.l-PAD.r)/(allFeatures.length);
+  const toY=v=>PAD.t+(1-v)*(H-PAD.t-PAD.b);
+  // Grid
+  ctx.strokeStyle=isDark?'rgba(255,255,255,0.05)':'rgba(0,0,0,0.05)';
+  [0,0.25,0.5,0.75,1].forEach(v=>{
+    ctx.beginPath();ctx.moveTo(PAD.l,toY(v));ctx.lineTo(W-PAD.r,toY(v));ctx.stroke();
+    ctx.fillStyle=isDark?'rgba(255,255,255,0.3)':'rgba(0,0,0,0.35)';ctx.font='10px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText((v*100).toFixed(0)+'%',PAD.l-4,toY(v)+3);
+  });
+  // Area fill
+  ctx.beginPath();ctx.moveTo(toX(0),toY(accHistory[0]));
+  accHistory.forEach((v,i)=>ctx.lineTo(toX(i),toY(v)));
+  ctx.lineTo(toX(n-1),H-PAD.b);ctx.lineTo(toX(0),H-PAD.b);ctx.closePath();
+  const grad=ctx.createLinearGradient(0,PAD.t,0,H-PAD.b);
+  grad.addColorStop(0,'rgba(79,70,229,0.3)');grad.addColorStop(1,'rgba(79,70,229,0.02)');
+  ctx.fillStyle=grad;ctx.fill();
+  // Line
+  ctx.beginPath();ctx.strokeStyle='#4F46E5';ctx.lineWidth=2.5;
+  accHistory.forEach((v,i)=>{if(i===0)ctx.moveTo(toX(i),toY(v));else ctx.lineTo(toX(i),toY(v));});
+  ctx.stroke();
+  // Points
+  accHistory.forEach((v,i)=>{
+    ctx.beginPath();ctx.arc(toX(i),toY(v),5,0,Math.PI*2);
+    ctx.fillStyle='#4F46E5';ctx.fill();ctx.strokeStyle='white';ctx.lineWidth=2;ctx.stroke();
+  });
+}
+
+renderPools();
+</script>
+{% endblock %}

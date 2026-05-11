@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block title %}Aggregated Features{% endblock %}
+{% block page_name %}Aggregated Features{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="hero-blob-1"></div>
+  <div class="hero-blob-2"></div>
+  <div class="max-w">
+    <div data-aos="fade-up">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+        <a href="/" style="font-size:0.83rem;color:var(--text-muted);text-decoration:none;">Home</a>
+        <span style="color:var(--text-muted);">/</span>
+        <span style="font-size:0.83rem;font-weight:600;color:var(--accent);">Aggregated Features</span>
+      </div>
+      <div class="hero-chip">📘 Module 05 · Feature Creation</div>
+      <h1 class="hero-title">Aggregated <span class="accent">Features</span></h1>
+      <p class="hero-desc">Summarize groups of rows using statistics like mean, std, count, min, and max — turning transaction-level data into customer-level intelligence.</p>
+    </div>
+  </div>
+</div>
+
+<div class="max-w" style="padding-top:48px;padding-bottom:80px;">
+  <div class="content-grid">
+    <div style="display:flex;flex-direction:column;gap:48px;">
+
+      <div data-aos="fade-up">
+        <div class="section-label">The Concept</div>
+        <h2 class="section-title">From Rows to <span class="g">Group Summaries</span></h2>
+        <p class="section-desc" style="margin-bottom:14px;">Aggregated features collapse multiple rows belonging to the same entity (customer, product, store) into a single row with summary statistics. This is one of the most common feature engineering techniques in Kaggle competitions!</p>
+        <p class="section-desc">Example: You have 1000 transaction rows per customer. Instead of feeding all 1000, you create: average_spend, max_purchase, total_orders, spending_std, days_since_first_order — one row per customer, rich with behavioral signals.</p>
+      </div>
+
+      <div data-aos="fade-up">
+        <div class="section-label">Real-World Examples</div>
+        <h2 class="section-title">Aggregation <span class="g">in Action</span></h2>
+        <div class="example-grid">
+          <div class="example-card">
+            <div class="example-tag">🛒 Retail</div>
+            <div class="example-title">Customer Purchase Summary</div>
+            <div class="example-desc">From raw purchase records, create: avg_basket_size, total_spend_6m, purchase_frequency, max_single_purchase, category_diversity_count — all aggregated per customer for churn prediction.</div>
+          </div>
+          <div class="example-card">
+            <div class="example-tag">🏦 Credit Risk</div>
+            <div class="example-title">Account Behavior Rollup</div>
+            <div class="example-desc">Banks roll up monthly account transactions to: avg_balance, max_overdraft_count, min_balance_last_year, payment_consistency_std — aggregated risk signals from raw ledger data.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEMO -->
+      <div data-aos="fade-up">
+        <div class="section-label">🎮 Interactive Demo</div>
+        <h2 class="section-title">Group Aggregation <span class="g">Builder</span></h2>
+        <p class="section-desc" style="margin-bottom:20px;">Edit the transaction data below and click "Aggregate by Customer" to see aggregated features computed live!</p>
+        
+        <div class="demo-card">
+          <div class="demo-header">
+            <div class="demo-dot" style="background:#ef4444;"></div>
+            <div class="demo-dot" style="background:#f59e0b;"></div>
+            <div class="demo-dot" style="background:#10b981;"></div>
+            <span style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-left:8px;">groupby_agg.py</span>
+          </div>
+          <div class="demo-body">
+            <div style="margin-bottom:16px;">
+              <div class="section-label" style="margin-bottom:8px;">Raw Transaction Data (click cells to edit)</div>
+              <div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:0.82rem;" id="raw-table">
+                  <thead>
+                    <tr>
+                      {% for col in ['customer_id','amount','category','date'] %}
+                      <th style="background:var(--surface2);padding:8px 12px;text-align:left;font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--text-muted);border-bottom:1.5px solid var(--border);">{{ col }}</th>
+                      {% endfor %}
+                    </tr>
+                  </thead>
+                  <tbody id="raw-tbody"></tbody>
+                </table>
+              </div>
+              <div style="display:flex;gap:10px;margin-top:10px;">
+                <button class="btn-outline" style="font-size:0.8rem;padding:7px 14px;" onclick="addRow()">+ Add Row</button>
+                <button class="btn-primary" style="font-size:0.8rem;padding:7px 14px;" onclick="computeAgg()">Aggregate by Customer →</button>
+              </div>
+            </div>
+            <div id="agg-result" style="display:none;">
+              <div class="section-label" style="margin-bottom:8px;">✨ Aggregated Features (1 row per customer)</div>
+              <div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:0.8rem;" id="agg-table">
+                  <thead><tr id="agg-head"></tr></thead>
+                  <tbody id="agg-tbody"></tbody>
+                </table>
+              </div>
+              <div class="code-block" id="agg-code" style="margin-top:16px;font-size:0.78rem;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="key-terms-box" data-aos="fade-left">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:16px;">🔑 Key Terms</div>
+        <div class="key-term-item">
+          <div class="key-term-badge">groupby</div>
+          <div><div class="key-term-name">GroupBy</div><div class="key-term-def">Pandas operation that splits data into groups, applies a function, and combines results.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">agg()</div>
+          <div><div class="key-term-name">Aggregation Function</div><div class="key-term-def">Statistical summary: mean, sum, std, min, max, count, median, nunique applied to groups.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Target Enc.</div>
+          <div><div class="key-term-name">Target Encoding</div><div class="key-term-def">Aggregating the target variable per group — e.g. mean conversion rate per city.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Window</div>
+          <div><div class="key-term-name">Rolling Window</div><div class="key-term-def">Aggregation over a sliding time window — e.g. 7-day average spend.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let rows = [
+  {cid:'C001',amt:450,cat:'Electronics',date:'2024-01-05'},
+  {cid:'C001',amt:120,cat:'Food',date:'2024-01-12'},
+  {cid:'C001',amt:890,cat:'Electronics',date:'2024-02-01'},
+  {cid:'C002',amt:250,cat:'Clothing',date:'2024-01-08'},
+  {cid:'C002',amt:75,cat:'Food',date:'2024-01-20'},
+  {cid:'C003',amt:1200,cat:'Electronics',date:'2024-01-15'},
+  {cid:'C003',amt:340,cat:'Clothing',date:'2024-02-10'},
+  {cid:'C003',amt:90,cat:'Food',date:'2024-02-15'},
+];
+
+function renderRaw() {
+  const tbody = document.getElementById('raw-tbody');
+  tbody.innerHTML = rows.map((r,i) => `
+    <tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:7px 12px;"><input type="text" value="${r.cid}" oninput="rows[${i}].cid=this.value" style="background:transparent;border:none;color:var(--text);font-family:'DM Mono',monospace;font-size:0.8rem;width:70px;outline:none;"/></td>
+      <td style="padding:7px 12px;"><input type="number" value="${r.amt}" oninput="rows[${i}].amt=parseFloat(this.value)||0" style="background:transparent;border:none;color:var(--accent);font-family:'DM Mono',monospace;font-size:0.8rem;width:80px;outline:none;font-weight:700;"/></td>
+      <td style="padding:7px 12px;"><input type="text" value="${r.cat}" oninput="rows[${i}].cat=this.value" style="background:transparent;border:none;color:var(--text);font-family:'DM Mono',monospace;font-size:0.8rem;width:100px;outline:none;"/></td>
+      <td style="padding:7px 12px;"><input type="text" value="${r.date}" oninput="rows[${i}].date=this.value" style="background:transparent;border:none;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:0.8rem;width:100px;outline:none;"/></td>
+    </tr>
+  `).join('');
+}
+
+function addRow() {
+  rows.push({cid:'C001',amt:100,cat:'Food',date:'2024-03-01'});
+  renderRaw();
+}
+
+function computeAgg() {
+  const groups = {};
+  rows.forEach(r => {
+    if (!groups[r.cid]) groups[r.cid] = [];
+    groups[r.cid].push(r.amt);
+  });
+  const agg = Object.entries(groups).map(([cid, amts]) => ({
+    customer_id: cid,
+    total_spend: amts.reduce((a,b)=>a+b,0).toFixed(0),
+    avg_spend: (amts.reduce((a,b)=>a+b,0)/amts.length).toFixed(1),
+    max_purchase: Math.max(...amts),
+    min_purchase: Math.min(...amts),
+    num_transactions: amts.length,
+    spend_std: (Math.sqrt(amts.reduce((s,v)=>s+(v-(amts.reduce((a,b)=>a+b)/amts.length))**2,0)/amts.length)).toFixed(1)
+  }));
+
+  const cols = Object.keys(agg[0]);
+  document.getElementById('agg-head').innerHTML = cols.map(c=>`<th style="background:var(--accent);color:white;padding:8px 12px;text-align:left;font-family:'DM Mono',monospace;font-size:0.72rem;">${c}</th>`).join('');
+  document.getElementById('agg-tbody').innerHTML = agg.map((r,i)=>`
+    <tr style="background:${i%2===0?'var(--surface2)':'var(--surface)'};border-bottom:1px solid var(--border);">
+      ${cols.map(c=>`<td style="padding:8px 12px;font-family:'DM Mono',monospace;font-size:0.8rem;color:${c==='customer_id'?'var(--accent)':'var(--text)'};">${r[c]}</td>`).join('')}
+    </tr>
+  `).join('');
+  document.getElementById('agg-code').innerHTML = `<span style="color:#818cf8;">df</span>.groupby(<span style="color:#fbbf24;">'customer_id'</span>)[<span style="color:#fbbf24;">'amount'</span>].agg([<span style="color:#fbbf24;">'sum','mean','max','min','count','std'</span>])`;
+  document.getElementById('agg-result').style.display = 'block';
+}
+
+renderRaw();
+</script>
+{% endblock %}

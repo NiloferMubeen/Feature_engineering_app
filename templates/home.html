@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+{% block title %}Feature Engineering — Home{% endblock %}
+{% block page_name %}Home{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ── Colour palette ── */
+:root {
+  --pink:    #EC4899; --pink-lt:  rgba(236,72,153,0.12);
+  --rose:    #F43F5E; --rose-lt:  rgba(244,63,94,0.10);
+  --violet:  #7C3AED; --violet-lt:rgba(124,58,237,0.12);
+  --amber:   #F59E0B; --amber-lt: rgba(245,158,11,0.12);
+  --teal:    #14B8A6; --teal-lt:  rgba(20,184,166,0.12);
+  --emerald: #10B981; --emerald-lt:rgba(16,185,129,0.12);
+  --sky:     #0EA5E9; --sky-lt:   rgba(14,165,233,0.12);
+  --orange:  #F97316; --orange-lt:rgba(249,115,22,0.12);
+}
+
+/* ── Hero ── */
+.hero-section {
+  min-height: calc(100vh - 64px);
+  display: flex; align-items: center;
+  background: #ffffff;
+  position: relative; overflow: hidden;
+}
+
+/* Colourful aurora orbs */
+.orb { position:absolute; border-radius:50%; pointer-events:none; filter:blur(80px); }
+.orb-1 { width:700px;height:700px;top:-220px;right:-160px;
+  background:radial-gradient(circle,rgba(124,58,237,0.15) 0%,rgba(236,72,153,0.08) 50%,transparent 70%);
+  animation:orbFloat1 18s ease-in-out infinite; }
+.orb-2 { width:560px;height:560px;bottom:-140px;left:-120px;
+  background:radial-gradient(circle,rgba(244,63,94,0.13) 0%,rgba(245,158,11,0.06) 55%,transparent 72%);
+  animation:orbFloat2 22s ease-in-out infinite; }
+.orb-3 { width:380px;height:380px;top:25%;left:30%;
+  background:radial-gradient(circle,rgba(14,165,233,0.10) 0%,transparent 65%);
+  animation:orbFloat3 14s ease-in-out infinite; }
+.orb-4 { width:260px;height:260px;top:10%;left:10%;
+  background:radial-gradient(circle,rgba(16,185,129,0.09) 0%,transparent 68%);
+  animation:orbFloat1 12s ease-in-out infinite 2s; }
+.orb-5 { width:200px;height:200px;bottom:15%;right:22%;
+  background:radial-gradient(circle,rgba(245,158,11,0.10) 0%,transparent 65%);
+  animation:orbFloat2 16s ease-in-out infinite 4s; }
+
+@keyframes orbFloat1{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(40px,-55px) scale(1.05)}66%{transform:translate(-25px,28px) scale(0.97)}}
+@keyframes orbFloat2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(50px,-40px) scale(1.08)}}
+@keyframes orbFloat3{0%,100%{transform:translate(0,0)}40%{transform:translate(-28px,22px)}70%{transform:translate(22px,-26px)}}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-18px);}}
+
+/* ── Animated gradient word ── */
+@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.animated-gradient-word{
+  background:linear-gradient(270deg,#4F46E5,#EC4899,#F43F5E,#F59E0B,#10B981,#0EA5E9,#7C3AED,#4F46E5);
+  background-size:500% 500%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:gradientShift 5s ease-in-out infinite;display:inline-block;
+}
+
+/* ── Stat pills ── */
+.hero-stat-pill{
+  display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:100px;
+  font-size:0.83rem;font-weight:600;border:1.5px solid;cursor:default;transition:all 0.2s;
+}
+.hero-stat-pill:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,0.1);}
+
+/* ── CTA buttons ── */
+.hero-cta-primary{
+  display:inline-flex;align-items:center;gap:8px;padding:13px 28px;
+  background:linear-gradient(135deg,#4F46E5,#7C3AED);color:white;
+  font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;
+  border-radius:12px;text-decoration:none;position:relative;overflow:hidden;
+  box-shadow:0 8px 28px rgba(79,70,229,0.35);transition:all 0.25s;
+}
+.hero-cta-primary::before{
+  content:'';position:absolute;top:0;left:0;width:60%;bottom:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);
+  animation:btnShimmer 3s ease-in-out infinite 1.5s;
+}
+.hero-cta-primary:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(79,70,229,0.45);}
+@keyframes btnShimmer{0%{transform:translateX(-100%) skew(-15deg)}100%{transform:translateX(300%) skew(-15deg)}}
+.hero-cta-secondary{
+  display:inline-flex;align-items:center;gap:8px;padding:13px 28px;
+  background:white;color:#EC4899;font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;
+  border-radius:12px;text-decoration:none;border:2px solid rgba(236,72,153,0.3);
+  transition:all 0.25s;box-shadow:0 2px 10px rgba(0,0,0,0.06);
+}
+.hero-cta-secondary:hover{background:#FFF0F6;border-color:#EC4899;transform:translateY(-3px);box-shadow:0 8px 24px rgba(236,72,153,0.2);}
+
+/* ── Hero image ── */
+.hero-img-wrap{
+  position:relative;flex-shrink:0;
+  width:clamp(360px,46%,580px);height:clamp(360px,46%,580px);
+  animation:float 6s ease-in-out infinite;
+}
+.hero-img-wrap img{width:100%;height:100%;object-fit:contain;}
+
+/* ── Colourful section divider ── */
+.section-divider{
+  height:5px;width:100%;
+  background:linear-gradient(90deg,#EC4899,#F43F5E,#F59E0B,#10B981,#0EA5E9,#7C3AED,#4F46E5);
+  background-size:300% 100%;animation:gradientShift 6s ease-in-out infinite;
+}
+
+/* ── Module section background ── */
+.modules-section{
+  padding:80px 0;
+  background:linear-gradient(160deg,#fdf4ff 0%,#fff0f6 20%,#f0f9ff 50%,#f0fdf4 75%,#fffbeb 100%);
+  position:relative;overflow:hidden;
+}
+.modules-section::before{
+  content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;border-radius:50%;
+  background:radial-gradient(circle,rgba(124,58,237,0.08) 0%,transparent 70%);
+}
+.modules-section::after{
+  content:'';position:absolute;bottom:-40px;left:-40px;width:250px;height:250px;border-radius:50%;
+  background:radial-gradient(circle,rgba(16,185,129,0.08) 0%,transparent 70%);
+}
+
+/* ── Topic cards ── */
+.topic-card{
+  background:white;border:2px solid transparent;border-radius:18px;padding:20px 22px;
+  transition:all 0.25s;text-decoration:none;display:block;position:relative;overflow:hidden;
+  box-shadow:0 2px 12px rgba(0,0,0,0.05);
+}
+.topic-card:hover{transform:translateY(-4px);box-shadow:0 10px 32px rgba(0,0,0,0.1);}
+.topic-num{
+  font-family:'DM Mono',monospace;font-size:0.7rem;font-weight:800;
+  padding:3px 10px;border-radius:6px;display:inline-block;margin-bottom:8px;
+}
+.topic-title{font-family:'Sora',sans-serif;font-weight:700;font-size:0.92rem;color:#0f172a;margin-bottom:4px;}
+.topic-desc{font-size:0.8rem;color:#64748b;line-height:1.55;}
+
+/* Per-card accent colours */
+.tc-1{border-color:rgba(79,70,229,0.25);} .tc-1:hover{border-color:#4F46E5;} .tc-1 .topic-num{color:#4F46E5;background:rgba(79,70,229,0.1);}
+.tc-2{border-color:rgba(236,72,153,0.25);} .tc-2:hover{border-color:#EC4899;} .tc-2 .topic-num{color:#EC4899;background:rgba(236,72,153,0.1);}
+.tc-3{border-color:rgba(245,158,11,0.25);} .tc-3:hover{border-color:#F59E0B;} .tc-3 .topic-num{color:#F59E0B;background:rgba(245,158,11,0.1);}
+.tc-4{border-color:rgba(20,184,166,0.25);} .tc-4:hover{border-color:#14B8A6;} .tc-4 .topic-num{color:#14B8A6;background:rgba(20,184,166,0.1);}
+.tc-5{border-color:rgba(16,185,129,0.25);} .tc-5:hover{border-color:#10B981;} .tc-5 .topic-num{color:#10B981;background:rgba(16,185,129,0.1);}
+.tc-6{border-color:rgba(14,165,233,0.25);} .tc-6:hover{border-color:#0EA5E9;} .tc-6 .topic-num{color:#0EA5E9;background:rgba(14,165,233,0.1);}
+.tc-7{border-color:rgba(244,63,94,0.25);} .tc-7:hover{border-color:#F43F5E;} .tc-7 .topic-num{color:#F43F5E;background:rgba(244,63,94,0.1);}
+.tc-8{border-color:rgba(124,58,237,0.25);} .tc-8:hover{border-color:#7C3AED;} .tc-8 .topic-num{color:#7C3AED;background:rgba(124,58,237,0.1);}
+.tc-9{border-color:rgba(249,115,22,0.25);} .tc-9:hover{border-color:#F97316;} .tc-9 .topic-num{color:#F97316;background:rgba(249,115,22,0.1);}
+.tc-10{border-color:rgba(251,191,36,0.25);} .tc-10:hover{border-color:#FBBF24;} .tc-10 .topic-num{color:#b45309;background:rgba(251,191,36,0.15);}
+.tc-11{border-color:rgba(16,185,129,0.25);} .tc-11:hover{border-color:#10B981;} .tc-11 .topic-num{color:#059669;background:rgba(16,185,129,0.12);}
+
+/* ── Pillar header ── */
+.pillar-hd{
+  display:flex;align-items:center;gap:14px;margin-bottom:22px;
+  padding:16px 20px;border-radius:16px;
+}
+.pillar-icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+
+/* ── Quiz CTA ── */
+.quiz-cta{
+  margin-top:48px;border-radius:24px;padding:48px 40px;text-align:center;
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#4F46E5 0%,#7C3AED 35%,#EC4899 70%,#F43F5E 100%);
+}
+.quiz-cta::before{content:'';position:absolute;top:-60px;right:-60px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,0.08);}
+.quiz-cta::after{content:'';position:absolute;bottom:-40px;left:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.06);}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ── HERO ── -->
+<div class="hero-section">
+  <!-- Aurora orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+  <div class="orb orb-5"></div>
+
+  <div class="max-w" style="width:100%;padding-top:40px;padding-bottom:40px;position:relative;z-index:2;">
+    <div style="display:flex;align-items:center;gap:48px;flex-wrap:wrap;">
+
+      <!-- LEFT TEXT -->
+      <div style="flex:1;min-width:280px;" data-aos="fade-right" data-aos-duration="1100" data-aos-delay="100">
+
+        <!-- Badge -->
+        <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:100px;background:linear-gradient(135deg,rgba(79,70,229,0.1),rgba(236,72,153,0.1));border:1.5px solid rgba(79,70,229,0.2);margin-bottom:20px;">
+          <span style="width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,#4F46E5,#EC4899);animation:pulse-dot 1.5s ease-in-out infinite;"></span>
+          <span style="font-family:'Sora',sans-serif;font-size:0.78rem;font-weight:700;background:linear-gradient(135deg,#4F46E5,#EC4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">🎯 Feature Engineering Masterclass</span>
+        </div>
+
+        <h1 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(2rem,5vw,3.4rem);line-height:1.08;letter-spacing:-0.04em;color:#0f172a;margin-bottom:20px;">
+          Build Smarter<br/>
+          <span class="animated-gradient-word">Features.</span><br/>
+          Train Better Models.
+        </h1>
+
+        <p style="font-size:1.05rem;color:#64748b;line-height:1.75;max-width:480px;margin-bottom:32px;">
+          A hands-on, interactive guide to Feature Creation and Feature Selection — the art of giving your ML models the right information to learn from.
+        </p>
+
+        <!-- CTAs -->
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:36px;">
+          <a href="/manual-features" class="hero-cta-primary">Start Learning →</a>
+          <a href="/quiz" class="hero-cta-secondary">🧠 Take the Quiz</a>
+        </div>
+
+        <!-- Stat pills -->
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <div class="hero-stat-pill" style="background:rgba(79,70,229,0.07);border-color:rgba(79,70,229,0.2);color:#4F46E5;">
+            📚 11 Modules
+          </div>
+          <div class="hero-stat-pill" style="background:rgba(236,72,153,0.07);border-color:rgba(236,72,153,0.2);color:#EC4899;">
+            🤖 AI-Powered Quiz
+          </div>
+          <div class="hero-stat-pill" style="background:rgba(16,185,129,0.07);border-color:rgba(16,185,129,0.2);color:#10B981;">
+            ⚡ Live Demos
+          </div>
+          <div class="hero-stat-pill" style="background:rgba(245,158,11,0.07);border-color:rgba(245,158,11,0.2);color:#b45309;">
+            🎯 Groq + Llama 3
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: IMAGE -->
+      <div class="hero-img-wrap" data-aos="fade-left" data-aos-duration="1200" data-aos-delay="250">
+        <img src="/static/images/hero.png" alt="Feature Engineering Illustration"
+          onerror="this.style.display='none';document.getElementById('hero-fallback').style.display='flex';" />
+        <div id="hero-fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+          <div style="width:130px;height:130px;border-radius:32px;background:linear-gradient(135deg,#4F46E5,#EC4899);display:flex;align-items:center;justify-content:center;font-size:3.8rem;box-shadow:0 24px 64px rgba(79,70,229,0.4);animation:float 4s ease-in-out infinite;">🧠</div>
+          <div style="font-family:'DM Mono',monospace;font-size:0.75rem;color:#94a3b8;text-align:center;">Add hero.png to<br/>static/images/</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Rainbow divider -->
+<div class="section-divider"></div>
+
+<!-- ── MODULES SECTION ── -->
+<div class="modules-section">
+  <div class="max-w" style="position:relative;z-index:1;">
+
+    <div style="text-align:center;margin-bottom:52px;" data-aos="fade-up" data-aos-duration="1000">
+      <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;background:linear-gradient(135deg,#EC4899,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;">What You'll Learn</div>
+      <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(1.6rem,3.5vw,2.4rem);color:#0f172a;letter-spacing:-0.03em;line-height:1.2;">
+        Two Pillars of <span style="background:linear-gradient(135deg,#4F46E5,#EC4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Feature Engineering</span>
+      </h2>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;" data-aos="fade-up">
+
+      <!-- ── Feature Creation ── -->
+      <div>
+        <div class="pillar-hd" style="background:linear-gradient(135deg,rgba(79,70,229,0.08),rgba(236,72,153,0.06));border:1.5px solid rgba(79,70,229,0.15);">
+          <div class="pillar-icon" style="background:linear-gradient(135deg,#4F46E5,#7C3AED);">🔨</div>
+          <div>
+            <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.1rem;color:#0f172a;">Feature Creation</div>
+            <div style="font-size:0.78rem;color:#64748b;">Build powerful signals from raw data</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          {% set creation_pages = [
+            ('/manual-features','01','Manual Feature Creation','Craft domain-specific features using expert knowledge','tc-1'),
+            ('/interaction-features','02','Interaction Features','Capture joint effects — products, ratios & differences','tc-2'),
+            ('/polynomial-features','03','Polynomial Features','Model non-linear curves with higher-degree terms','tc-3'),
+            ('/datetime-features','04','Date-Time Features','Extract hour, day-of-week, seasonality & more','tc-4'),
+            ('/aggregated-features','05','Aggregated Features','Summarize groups with mean, std, count & rollups','tc-5')
+          ] %}
+          {% for url, num, title, desc, cls in creation_pages %}
+          <a href="{{ url }}" class="topic-card {{ cls }}" data-aos="fade-up" data-aos-delay="{{ loop.index * 90 }}" data-aos-duration="900">
+            <div class="topic-num">{{ num }}</div>
+            <div class="topic-title">{{ title }}</div>
+            <div class="topic-desc">{{ desc }}</div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- ── Feature Selection ── -->
+      <div>
+        <div class="pillar-hd" style="background:linear-gradient(135deg,rgba(14,165,233,0.08),rgba(16,185,129,0.06));border:1.5px solid rgba(14,165,233,0.15);">
+          <div class="pillar-icon" style="background:linear-gradient(135deg,#0EA5E9,#10B981);">🎯</div>
+          <div>
+            <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.1rem;color:#0f172a;">Feature Selection</div>
+            <div style="font-size:0.78rem;color:#64748b;">Choose only the features that matter</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          {% set selection_pages = [
+            ('/correlation','06','Correlation','Measure linear relationships & spot redundancy','tc-6'),
+            ('/chi-square','07','Chi-Square','Test independence between categorical features','tc-7'),
+            ('/anova','08','ANOVA','Compare group means to rank feature importance','tc-8'),
+            ('/forward-selection','09','Forward Selection','Greedily add features that improve the model','tc-9'),
+            ('/backward-elimination','10','Backward Elimination','Prune the weakest features by p-value','tc-10'),
+            ('/rfe','11','Recursive Feature Elimination','Model-based iterative feature ranking & pruning','tc-11')
+          ] %}
+          {% for url, num, title, desc, cls in selection_pages %}
+          <a href="{{ url }}" class="topic-card {{ cls }}" data-aos="fade-up" data-aos-delay="{{ loop.index * 90 }}" data-aos-duration="900">
+            <div class="topic-num">{{ num }}</div>
+            <div class="topic-title">{{ title }}</div>
+            <div class="topic-desc">{{ desc }}</div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Quiz CTA ── -->
+    <div class="quiz-cta" data-aos="fade-up" style="position:relative;z-index:1;">
+      <div style="font-size:2.8rem;margin-bottom:14px;position:relative;z-index:1;">🏆</div>
+      <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.7rem;color:white;margin-bottom:10px;position:relative;z-index:1;letter-spacing:-0.02em;">Ready to Test Your Knowledge?</h3>
+      <p style="color:rgba(255,255,255,0.82);margin-bottom:28px;font-size:0.98rem;max-width:480px;margin-left:auto;margin-right:auto;position:relative;z-index:1;">Take the AI-powered quiz after exploring all modules. Fresh questions every time, generated by Llama 3 via Groq!</p>
+      <a href="/quiz" style="position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:14px;background:white;color:#7C3AED;font-weight:800;text-decoration:none;font-size:1rem;font-family:'Sora',sans-serif;box-shadow:0 8px 28px rgba(0,0,0,0.18);transition:all 0.2s;"
+        onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 14px 36px rgba(0,0,0,0.22)'"
+        onmouseout="this.style.transform='';this.style.boxShadow='0 8px 28px rgba(0,0,0,0.18)'">
+        🎯 Take the Quiz →
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% block title %}Chi-Square — Feature Selection{% endblock %}
+{% block page_name %}Chi-Square{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="hero-blob-1"></div>
+  <div class="hero-blob-2"></div>
+  <div class="max-w">
+    <div data-aos="fade-up">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+        <a href="/" style="font-size:0.83rem;color:var(--text-muted);text-decoration:none;">Home</a>
+        <span style="color:var(--text-muted);">/</span>
+        <span style="font-size:0.83rem;font-weight:600;color:var(--accent2);">Feature Selection</span>
+      </div>
+      <div class="hero-chip" style="background:rgba(6,182,212,0.1);color:var(--accent2);">🎯 Module 07 · Feature Selection</div>
+      <h1 class="hero-title">Chi-Square <span style="color:var(--accent2);">Test</span></h1>
+      <p class="hero-desc">Test statistical independence between categorical features and a categorical target — the standard filter method for text classification and categorical data.</p>
+    </div>
+  </div>
+</div>
+
+<div class="max-w" style="padding-top:48px;padding-bottom:80px;">
+  <div class="content-grid">
+    <div style="display:flex;flex-direction:column;gap:48px;">
+
+      <div data-aos="fade-up">
+        <div class="section-label">The Concept</div>
+        <h2 class="section-title">Testing <span class="g">Independence</span></h2>
+        <p class="section-desc" style="margin-bottom:14px;">The chi-square (χ²) test checks whether two categorical variables are <strong style="color:var(--text);">independent</strong>. If a feature is independent of the target, it carries no useful information — drop it. If they're dependent, the feature is informative — keep it!</p>
+        <p class="section-desc" style="margin-bottom:14px;">The test compares <strong style="color:var(--text);">observed frequencies</strong> (what we see in the data) against <strong style="color:var(--text);">expected frequencies</strong> (what we'd see if they were independent). A large χ² means a large deviation from independence.</p>
+        <div class="formula-box">χ² = Σ [(Observed - Expected)² / Expected]<br/>p-value → small p = dependent = useful feature</div>
+      </div>
+
+      <div data-aos="fade-up">
+        <div class="section-label">Real-World Examples</div>
+        <h2 class="section-title">Chi-Square <span class="g">in Action</span></h2>
+        <div class="example-grid">
+          <div class="example-card">
+            <div class="example-tag">📧 Spam Detection</div>
+            <div class="example-title">Word Presence vs Spam</div>
+            <div class="example-desc">Does the word "FREE" appear more often in spam vs ham emails? Chi-square quantifies this dependency. Words with high χ² scores (like "lottery", "prize") are the best features for spam classifiers.</div>
+          </div>
+          <div class="example-card">
+            <div class="example-tag">🏥 Medical Research</div>
+            <div class="example-title">Treatment vs Outcome</div>
+            <div class="example-desc">Is blood type dependent on a disease outcome? Chi-square tests this. If p > 0.05, blood type is independent of the disease — we can safely exclude it from the prediction model.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE DEMO -->
+      <div data-aos="fade-up">
+        <div class="section-label">🎮 Interactive Demo</div>
+        <h2 class="section-title">Chi-Square <span class="g">Calculator</span></h2>
+        <p class="section-desc" style="margin-bottom:20px;">Edit the contingency table below and see the chi-square statistic and p-value update live. Change values to see how dependency affects the score!</p>
+        
+        <div class="demo-card">
+          <div class="demo-header">
+            <div class="demo-dot" style="background:#ef4444;"></div>
+            <div class="demo-dot" style="background:#f59e0b;"></div>
+            <div class="demo-dot" style="background:#10b981;"></div>
+            <span style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-left:8px;">chi_square_test.py</span>
+            <div style="margin-left:auto;display:flex;gap:8px;">
+              <button class="btn-outline" style="font-size:0.75rem;padding:5px 12px;" onclick="loadScenario('spam')">📧 Spam</button>
+              <button class="btn-outline" style="font-size:0.75rem;padding:5px 12px;" onclick="loadScenario('medical')">🏥 Medical</button>
+              <button class="btn-outline" style="font-size:0.75rem;padding:5px 12px;" onclick="loadScenario('independent')">⭕ Independent</button>
+            </div>
+          </div>
+          <div class="demo-body">
+            <div style="margin-bottom:20px;">
+              <div class="section-label" style="margin-bottom:8px;">Contingency Table (click cells to edit)</div>
+              <div style="overflow-x:auto;">
+                <table style="border-collapse:collapse;" id="cont-table">
+                  <thead>
+                    <tr>
+                      <th style="padding:10px 14px;background:var(--surface2);font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--text-muted);border:1px solid var(--border);"></th>
+                      <th id="col1-label" style="padding:10px 14px;background:var(--accent);color:white;font-family:'DM Mono',monospace;font-size:0.78rem;border:1px solid var(--border);">Spam</th>
+                      <th id="col2-label" style="padding:10px 14px;background:var(--accent);color:white;font-family:'DM Mono',monospace;font-size:0.78rem;border:1px solid var(--border);">Ham</th>
+                      <th style="padding:10px 14px;background:var(--surface2);font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--text-muted);border:1px solid var(--border);">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody id="cont-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div id="chi-results" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;"></div>
+            <div id="chi-interpretation" style="margin-top:16px;padding:16px;border-radius:14px;display:none;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div data-aos="fade-up">
+        <div class="section-label">Python Code</div>
+        <h2 class="section-title">sklearn <span class="g">Implementation</span></h2>
+        <div class="code-block">
+<span class="kw">from</span> sklearn.feature_selection <span class="kw">import</span> chi2, SelectKBest<br/>
+<span class="kw">import</span> numpy <span class="kw">as</span> np<br/><br/>
+<span class="cm"># X must be non-negative (counts or frequencies)</span><br/>
+selector = SelectKBest(<span class="fn">chi2</span>, k=<span class="num">10</span>)<br/>
+X_new = selector.<span class="fn">fit_transform</span>(X, y)<br/><br/>
+<span class="cm"># Get scores and p-values per feature</span><br/>
+scores, pvalues = <span class="fn">chi2</span>(X, y)<br/>
+<span class="cm"># p < 0.05 → feature is dependent on target → keep!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="key-terms-box" data-aos="fade-left">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:16px;">🔑 Key Terms</div>
+        <div class="key-term-item">
+          <div class="key-term-badge">χ² statistic</div>
+          <div><div class="key-term-name">Chi-Square Statistic</div><div class="key-term-def">Measures deviation from independence. Higher χ² = stronger dependency between variables.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">p-value</div>
+          <div><div class="key-term-name">p-value</div><div class="key-term-def">Probability of observing the data if variables are independent. p &lt; 0.05 → dependent → keep feature.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">DoF</div>
+          <div><div class="key-term-name">Degrees of Freedom</div><div class="key-term-def">(rows-1) × (cols-1) in the contingency table. Needed to look up the p-value.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Contingency Table</div>
+          <div><div class="key-term-name">Contingency Table</div><div class="key-term-def">A frequency table showing the joint distribution of two categorical variables.</div></div>
+        </div>
+      </div>
+      <div style="background:rgba(6,182,212,0.08);border:1.5px solid rgba(6,182,212,0.25);border-radius:18px;padding:20px;" data-aos="fade-left" data-aos-delay="100">
+        <div style="font-weight:700;color:var(--accent2);font-size:0.9rem;margin-bottom:8px;">⚠️ Important Constraint</div>
+        <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.65;">Chi-square only works with <strong style="color:var(--text);">non-negative values</strong>. In sklearn, use it with count features (bag-of-words) or normalize continuous features to [0,1] first.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let table = [[80, 20], [30, 70]];
+let rowLabels = ['Word: FREE', 'No FREE'];
+
+function loadScenario(type) {
+  if (type === 'spam') {
+    table = [[80,20],[30,70]]; rowLabels = ['Word: FREE','No FREE'];
+    document.getElementById('col1-label').textContent='Spam';
+    document.getElementById('col2-label').textContent='Ham';
+  } else if (type === 'medical') {
+    table = [[45,55],[48,52]]; rowLabels = ['Blood Type A','Other Types'];
+    document.getElementById('col1-label').textContent='Disease';
+    document.getElementById('col2-label').textContent='No Disease';
+  } else {
+    table = [[50,50],[50,50]]; rowLabels = ['Category A','Category B'];
+    document.getElementById('col1-label').textContent='Class 1';
+    document.getElementById('col2-label').textContent='Class 0';
+  }
+  renderTable();
+}
+
+function renderTable() {
+  const tbody = document.getElementById('cont-tbody');
+  tbody.innerHTML = table.map((row, ri) => {
+    const total = row.reduce((a,b)=>a+b,0);
+    return `<tr>
+      <td style="padding:10px 14px;font-weight:700;font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--accent);background:var(--surface2);border:1px solid var(--border);">${rowLabels[ri]}</td>
+      ${row.map((v,ci)=>`<td style="border:1px solid var(--border);padding:2px;"><input type="number" value="${v}" min="0" oninput="table[${ri}][${ci}]=parseInt(this.value)||0;computeChi();" style="background:transparent;border:none;color:var(--text);font-family:'DM Mono',monospace;font-size:0.9rem;font-weight:700;text-align:center;width:80px;padding:10px;outline:none;"/></td>`).join('')}
+      <td style="padding:10px 14px;font-family:'DM Mono',monospace;font-size:0.8rem;font-weight:700;color:var(--text-muted);background:var(--surface2);border:1px solid var(--border);">${total}</td>
+    </tr>`;
+  }).join('');
+  // Grand total row
+  const colTotals = [0,1].map(ci=>table.reduce((s,r)=>s+r[ci],0));
+  const grand = colTotals.reduce((a,b)=>a+b,0);
+  tbody.innerHTML += `<tr>
+    <td style="padding:10px 14px;font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--text-muted);background:var(--surface2);border:1px solid var(--border);">Total</td>
+    ${colTotals.map(v=>`<td style="padding:10px 14px;font-family:'DM Mono',monospace;font-size:0.8rem;font-weight:700;color:var(--text-muted);background:var(--surface2);border:1px solid var(--border);">${v}</td>`).join('')}
+    <td style="padding:10px 14px;font-family:'DM Mono',monospace;font-size:0.8rem;font-weight:700;color:var(--text);background:var(--surface2);border:1px solid var(--border);">${grand}</td>
+  </tr>`;
+  computeChi();
+}
+
+function computeChi() {
+  const N = table.flat().reduce((a,b)=>a+b,0);
+  if (N === 0) return;
+  const rowSums = table.map(r=>r.reduce((a,b)=>a+b,0));
+  const colSums = [0,1].map(ci=>table.reduce((s,r)=>s+r[ci],0));
+  let chi2 = 0;
+  const expected = [];
+  for (let i=0;i<2;i++) {
+    expected.push([]);
+    for (let j=0;j<2;j++) {
+      const E = (rowSums[i]*colSums[j])/N;
+      expected[i].push(E);
+      if (E > 0) chi2 += Math.pow(table[i][j]-E,2)/E;
+    }
+  }
+  const dof = 1; // (2-1)*(2-1)
+  // Approximate p-value for chi2 with 1 dof
+  const p = Math.exp(-chi2/2);
+  const significant = p < 0.05;
+  document.getElementById('chi-results').innerHTML = `
+    <div style="background:var(--surface2);border-radius:14px;padding:16px;text-align:center;">
+      <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;margin-bottom:4px;">χ² Statistic</div>
+      <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.8rem;color:var(--accent);">${chi2.toFixed(3)}</div>
+    </div>
+    <div style="background:var(--surface2);border-radius:14px;padding:16px;text-align:center;">
+      <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;margin-bottom:4px;">p-value (approx)</div>
+      <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.8rem;color:${significant?'#10b981':'#ef4444'};">${p.toFixed(4)}</div>
+    </div>
+    <div style="background:var(--surface2);border-radius:14px;padding:16px;text-align:center;">
+      <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;margin-bottom:4px;">Degrees of Freedom</div>
+      <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.8rem;color:var(--accent2);">1</div>
+    </div>
+    <div style="background:var(--surface2);border-radius:14px;padding:16px;text-align:center;">
+      <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;margin-bottom:4px;">Decision</div>
+      <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:1rem;color:${significant?'#10b981':'#ef4444'};">${significant?'✅ Keep':'❌ Drop'}</div>
+    </div>
+  `;
+  const interp = document.getElementById('chi-interpretation');
+  interp.style.display='block';
+  interp.style.background=significant?'rgba(16,185,129,0.08)':'rgba(239,68,68,0.08)';
+  interp.style.border=`1.5px solid ${significant?'rgba(16,185,129,0.25)':'rgba(239,68,68,0.25)'}`;
+  interp.style.color=significant?'#065f46':'#7f1d1d';
+  interp.innerHTML=significant
+    ? `<strong>✅ Statistically Significant!</strong> χ²=${chi2.toFixed(2)}, p=${p.toFixed(4)} < 0.05. The feature and target are <strong>dependent</strong> — this feature carries useful information. Keep it in your model!`
+    : `<strong>⚠️ Not Significant.</strong> χ²=${chi2.toFixed(2)}, p=${p.toFixed(4)} ≥ 0.05. The feature and target appear <strong>independent</strong> — this feature may not help the model. Consider dropping it.`;
+}
+
+loadScenario('spam');
+</script>
+{% endblock %}

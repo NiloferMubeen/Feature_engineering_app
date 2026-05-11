@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+{% block title %}Polynomial Features{% endblock %}
+{% block page_name %}Polynomial Features{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="hero-blob-1"></div>
+  <div class="hero-blob-2"></div>
+  <div class="max-w">
+    <div data-aos="fade-up">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+        <a href="/" style="font-size:0.83rem;color:var(--text-muted);text-decoration:none;">Home</a>
+        <span style="color:var(--text-muted);">/</span>
+        <span style="font-size:0.83rem;font-weight:600;color:var(--accent);">Polynomial Features</span>
+      </div>
+      <div class="hero-chip">📘 Module 03 · Feature Creation</div>
+      <h1 class="hero-title">Polynomial <span class="accent">Features</span></h1>
+      <p class="hero-desc">Extend linear models to capture curved, non-linear relationships by adding squared, cubed, and higher-degree terms of your features.</p>
+    </div>
+  </div>
+</div>
+
+<div class="max-w" style="padding-top:48px;padding-bottom:80px;">
+  <div class="content-grid">
+    <div style="display:flex;flex-direction:column;gap:48px;">
+
+      <div data-aos="fade-up">
+        <div class="section-label">The Concept</div>
+        <h2 class="section-title">Beyond the <span class="g">Straight Line</span></h2>
+        <p class="section-desc" style="margin-bottom:14px;">Linear models fit a straight line: <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-family:'DM Mono',monospace;font-size:0.82rem;">y = w₁x</code>. But real-world relationships are curved. By adding x², x³, etc., we give the model the ability to fit curves while keeping the math linear (in terms of the coefficients).</p>
+        <p class="section-desc">The key insight: polynomial features transform the <strong style="color:var(--text);">input space</strong>, not the model. A linear model trained on polynomial features becomes a polynomial model.</p>
+      </div>
+
+      <div data-aos="fade-up">
+        <div class="section-label">Real-World Examples</div>
+        <h2 class="section-title">Polynomial Features <span class="g">in Action</span></h2>
+        <div class="example-grid">
+          <div class="example-card">
+            <div class="example-tag">🚗 Automotive</div>
+            <div class="example-title">Speed & Braking Distance</div>
+            <div class="example-desc">Braking distance doesn't grow linearly with speed — it grows as speed squared! A model without speed² will always underfit this critical safety relationship.</div>
+            <div class="formula-box" style="margin-top:10px;">distance ∝ speed² (not speed)</div>
+          </div>
+          <div class="example-card">
+            <div class="example-tag">💊 Pharmacology</div>
+            <div class="example-title">Drug Dose Response</div>
+            <div class="example-desc">Drug efficacy often follows a bell curve — too little has no effect, the sweet spot is optimal, and too much is toxic. This requires at least a degree-2 polynomial.</div>
+            <div class="formula-box" style="margin-top:10px;">efficacy = w₁·dose + w₂·dose²</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE DEMO -->
+      <div data-aos="fade-up">
+        <div class="section-label">🎮 Interactive Demo</div>
+        <h2 class="section-title">Curve Fitting <span class="g">Visualizer</span></h2>
+        <p class="section-desc" style="margin-bottom:20px;">Adjust the polynomial degree slider and watch how the fitted curve changes. Higher degrees can fit more complex patterns — but can overfit!</p>
+        
+        <div class="demo-card">
+          <div class="demo-header">
+            <div class="demo-dot" style="background:#ef4444;"></div>
+            <div class="demo-dot" style="background:#f59e0b;"></div>
+            <div class="demo-dot" style="background:#10b981;"></div>
+            <span style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-left:8px;">poly_demo.py</span>
+          </div>
+          <div class="demo-body">
+            <div style="display:flex;align-items:center;gap:20px;margin-bottom:16px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:200px;">
+                <label>Polynomial Degree: <strong id="deg-label" style="color:var(--accent);">1</strong></label>
+                <input type="range" id="deg-slider" min="1" max="7" value="1" oninput="updateDegree(this.value)" style="width:100%;margin-top:8px;"/>
+              </div>
+              <div style="flex:1;min-width:200px;">
+                <label>Data Pattern</label>
+                <select id="pattern-sel" onchange="drawChart()" style="margin-top:8px;">
+                  <option value="quad">Quadratic (x²)</option>
+                  <option value="sine">Sinusoidal</option>
+                  <option value="cubic">Cubic (x³)</option>
+                </select>
+              </div>
+              <div style="padding-top:22px;">
+                <button class="btn-outline" onclick="shuffleData()">🔀 Shuffle Data</button>
+              </div>
+            </div>
+            <canvas id="poly-chart" width="600" height="300" style="width:100%;border-radius:12px;background:var(--surface2);"></canvas>
+            <div style="display:flex;gap:16px;margin-top:16px;flex-wrap:wrap;">
+              <div style="flex:1;background:var(--surface2);border-radius:12px;padding:14px;text-align:center;">
+                <div style="font-size:0.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;margin-bottom:4px;">R² Score</div>
+                <div id="r2-score" style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.4rem;color:var(--accent);">—</div>
+              </div>
+              <div style="flex:1;background:var(--surface2);border-radius:12px;padding:14px;text-align:center;">
+                <div style="font-size:0.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;margin-bottom:4px;">Features Added</div>
+                <div id="feat-count" style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.4rem;color:var(--accent2);">—</div>
+              </div>
+              <div style="flex:2;background:var(--surface2);border-radius:12px;padding:14px;">
+                <div style="font-size:0.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;margin-bottom:4px;">Feature Names</div>
+                <div id="feat-names" style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text);line-height:1.8;"></div>
+              </div>
+            </div>
+            <div id="overfit-warning" style="display:none;margin-top:12px;padding:12px 16px;border-radius:10px;background:rgba(245,158,11,0.1);border:1.5px solid rgba(245,158,11,0.3);font-size:0.85rem;color:#b45309;">
+              ⚠️ <strong>Overfitting Warning!</strong> Degree ≥ 5 often overfits training data and performs poorly on unseen data. Watch the curve — it's starting to wiggle unnaturally!
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div data-aos="fade-up">
+        <div class="section-label">Python Code</div>
+        <h2 class="section-title">Using <span class="g">sklearn</span></h2>
+        <div class="code-block">
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> PolynomialFeatures<br/>
+<span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> LinearRegression<br/>
+<span class="kw">from</span> sklearn.pipeline <span class="kw">import</span> Pipeline<br/><br/>
+<span class="cm"># Create polynomial feature pipeline</span><br/>
+poly_pipeline = Pipeline([<br/>
+&nbsp;&nbsp;(<span class="str">'poly'</span>, PolynomialFeatures(degree=<span class="num">2</span>, include_bias=<span class="kw">False</span>)),<br/>
+&nbsp;&nbsp;(<span class="str">'model'</span>, LinearRegression())<br/>
+])<br/><br/>
+poly_pipeline.<span class="fn">fit</span>(X_train, y_train)<br/>
+<span class="cm"># X with 1 feature → X with: x, x², interactions</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="key-terms-box" data-aos="fade-left">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:16px;">🔑 Key Terms</div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Degree</div>
+          <div><div class="key-term-name">Polynomial Degree</div><div class="key-term-def">The highest power of x in the polynomial. Degree 2 = quadratic, Degree 3 = cubic.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Overfitting</div>
+          <div><div class="key-term-name">Overfitting</div><div class="key-term-def">When a model learns the training data too perfectly, including noise, and fails to generalize.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">R² Score</div>
+          <div><div class="key-term-name">R² Score</div><div class="key-term-def">Coefficient of determination — how much variance in y the model explains (0 to 1).</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Bias-Variance</div>
+          <div><div class="key-term-name">Bias-Variance Tradeoff</div><div class="key-term-def">Higher degree = lower bias but higher variance. Sweet spot is degree 2-4 for most problems.</div></div>
+        </div>
+      </div>
+      <div style="background:rgba(239,68,68,0.08);border:1.5px solid rgba(239,68,68,0.2);border-radius:18px;padding:20px;" data-aos="fade-left" data-aos-delay="100">
+        <div style="font-weight:700;color:#dc2626;font-size:0.9rem;margin-bottom:8px;">⚠️ Watch Out!</div>
+        <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.65;">With n features and degree d, polynomial features create <strong>O(nᵈ)</strong> terms. Even 10 features at degree 3 → 286 features! Always use with regularization (Ridge/Lasso).</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let dataPoints = [];
+let degree = 1;
+
+function generateData(pattern) {
+  const points = [];
+  for (let i = 0; i < 20; i++) {
+    const x = -3 + i * 0.3 + (Math.random() - 0.5) * 0.2;
+    let y;
+    if (pattern === 'quad') y = 0.5 * x * x + x * 0.5 + (Math.random() - 0.5) * 1.5;
+    else if (pattern === 'sine') y = 3 * Math.sin(x) + (Math.random() - 0.5) * 1.2;
+    else y = 0.3 * x * x * x - x + (Math.random() - 0.5) * 1.5;
+    points.push({ x: parseFloat(x.toFixed(2)), y: parseFloat(y.toFixed(2)) });
+  }
+  return points;
+}
+
+function shuffleData() {
+  const pattern = document.getElementById('pattern-sel').value;
+  dataPoints = generateData(pattern);
+  drawChart();
+}
+
+function updateDegree(v) {
+  degree = parseInt(v);
+  document.getElementById('deg-label').textContent = degree;
+  drawChart();
+}
+
+function polyFit(xs, ys, deg) {
+  // Simple least squares using Vandermonde matrix approach
+  const n = xs.length;
+  const A = [];
+  for (let i = 0; i < n; i++) {
+    const row = [];
+    for (let d = 0; d <= deg; d++) row.push(Math.pow(xs[i], d));
+    A.push(row);
+  }
+  // Solve via normal equations: (AᵀA)⁻¹Aᵀy using Gaussian elimination
+  const d1 = deg + 1;
+  const ATA = Array.from({length:d1},(_,i)=>Array.from({length:d1},(_,j)=>A.reduce((s,r)=>s+r[i]*r[j],0)));
+  const ATy = Array.from({length:d1},(_,i)=>A.reduce((s,r,k)=>s+r[i]*ys[k],0));
+  // Augment
+  for (let i=0;i<d1;i++) ATA[i].push(ATy[i]);
+  for (let col=0;col<d1;col++) {
+    let max=col; for(let r=col+1;r<d1;r++) if(Math.abs(ATA[r][col])>Math.abs(ATA[max][col]))max=r;
+    [ATA[col],ATA[max]]=[ATA[max],ATA[col]];
+    for(let r=0;r<d1;r++) if(r!==col&&ATA[col][col]!==0) {
+      const f=ATA[r][col]/ATA[col][col];
+      for(let c=col;c<=d1;c++) ATA[r][c]-=f*ATA[col][c];
+    }
+  }
+  return ATA.map((r,i)=>ATA[i][d1]/ATA[i][i]);
+}
+
+function evalPoly(coeffs, x) { return coeffs.reduce((s,c,i)=>s+c*Math.pow(x,i),0); }
+
+function drawChart() {
+  const canvas = document.getElementById('poly-chart');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  if (!dataPoints.length) return;
+  const xs = dataPoints.map(p=>p.x), ys = dataPoints.map(p=>p.y);
+  const xMin = Math.min(...xs)-0.5, xMax = Math.max(...xs)+0.5;
+  const yMin = Math.min(...ys)-1, yMax = Math.max(...ys)+1;
+  const toX = x => ((x-xMin)/(xMax-xMin))*(W-60)+30;
+  const toY = y => H-30-((y-yMin)/(yMax-yMin))*(H-60);
+
+  // Grid
+  const isDark = document.documentElement.classList.contains('dark');
+  ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+  ctx.lineWidth = 1;
+  for (let i=0;i<=5;i++) {
+    const y = yMin + (yMax-yMin)*i/5;
+    ctx.beginPath(); ctx.moveTo(30,toY(y)); ctx.lineTo(W-30,toY(y)); ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
+  const y0 = toY(0); ctx.beginPath(); ctx.moveTo(30,y0); ctx.lineTo(W-30,y0); ctx.stroke();
+
+  // Data points
+  dataPoints.forEach(p => {
+    ctx.beginPath(); ctx.arc(toX(p.x),toY(p.y),5,0,Math.PI*2);
+    ctx.fillStyle = 'rgba(6,182,212,0.8)'; ctx.fill();
+    ctx.strokeStyle = 'white'; ctx.lineWidth = 1.5; ctx.stroke();
+  });
+
+  // Fit
+  try {
+    const coeffs = polyFit(xs, ys, degree);
+    ctx.beginPath(); ctx.strokeStyle = '#4F46E5'; ctx.lineWidth = 2.5;
+    for (let i=0;i<=200;i++) {
+      const x = xMin + (xMax-xMin)*i/200;
+      const y = evalPoly(coeffs, x);
+      if (y < yMin-5 || y > yMax+5) continue;
+      if (i===0) ctx.moveTo(toX(x),toY(y)); else ctx.lineTo(toX(x),toY(y));
+    }
+    ctx.stroke();
+
+    // R²
+    const yMean = ys.reduce((a,b)=>a+b,0)/ys.length;
+    const ssTot = ys.reduce((s,y)=>s+(y-yMean)**2,0);
+    const ssRes = xs.reduce((s,x,i)=>s+(ys[i]-evalPoly(coeffs,x))**2,0);
+    const r2 = Math.max(0,Math.min(1,1-ssRes/ssTot));
+    document.getElementById('r2-score').textContent = r2.toFixed(3);
+    document.getElementById('r2-score').style.color = r2>0.85?'var(--accent3)':r2>0.6?'#f59e0b':'#ef4444';
+  } catch(e) {}
+
+  // Feature names
+  const names = ['x'];
+  for(let d=2;d<=degree;d++) names.push(`x^${d}`);
+  document.getElementById('feat-count').textContent = degree;
+  document.getElementById('feat-names').textContent = names.join(', ');
+  document.getElementById('overfit-warning').style.display = degree >= 5 ? 'block' : 'none';
+}
+
+// Init
+const pat = document.getElementById('pattern-sel').value;
+dataPoints = generateData(pat);
+document.getElementById('pattern-sel').onchange = () => { dataPoints = generateData(document.getElementById('pattern-sel').value); drawChart(); };
+drawChart();
+</script>
+{% endblock %}

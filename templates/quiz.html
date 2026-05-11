@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+{% block title %}Quiz — Feature Engineering{% endblock %}
+{% block page_name %}Knowledge Quiz{% endblock %}
+
+{% block extra_head %}
+<style>/* ── Page-specific hero background ── */
+.page-hero {
+  background: linear-gradient(145deg, 79,70,229,0.13 0%, white 60%) !important;
+  background: linear-gradient(145deg, rgba(79,70,229,0.13 0%, #fafbff 100%) !important;
+}
+/* Decorative blobs inside hero */
+.page-hero .max-w { position: relative; }
+.hero-blob-1 {
+  position:absolute;top:-80px;right:-80px;width:380px;height:380px;border-radius:50%;
+  background:radial-gradient(circle, rgba(79,70,229,0.13) 0%, transparent 65%);
+  animation:orbBlob 14s ease-in-out infinite;pointer-events:none;
+}
+.hero-blob-2 {
+  position:absolute;bottom:-60px;left:-40px;width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle, rgba(236,72,153,0.09) 0%, transparent 65%);
+  animation:orbBlob 18s ease-in-out infinite 3s;pointer-events:none;
+}
+@keyframes orbBlob{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(25px,-22px) scale(1.05)}70%{transform:translate(-18px,16px) scale(0.97)}}
+
+/* Accent colour override for this page */
+.page-hero .hero-chip { color:#4F46E5!important;border-color:#4F46E533!important;background:#4F46E511!important; }
+h1.hero-title .accent { color:#4F46E5!important; }
+.page-hero .section-label, .page-hero .stat-pill svg { color:#4F46E5!important; }
+.page-hero .stat-pill { border-color:#4F46E533!important;background:#4F46E509!important; }
+.demo-header .demo-dot:last-of-type { background:#4F46E5!important; }
+
+/* Section label override */
+.section-label {
+  background: linear-gradient(135deg,#4F46E5,#EC4899) !important;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+h2.section-title .g {
+  background: linear-gradient(135deg,#4F46E5,#EC4899,#4F46E5) !important;
+  background-size:300% 100%!important;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:gradientShiftG 5s ease-in-out infinite!important;
+}
+/* Key-term badge accent */
+.key-term-badge {
+  color:#4F46E5!important;background:#4F46E512!important;border-color:#4F46E530!important;
+}
+/* Example card top borders */
+.example-grid .example-card:nth-child(1){border-top:3px solid #4F46E5!important;}
+.example-grid .example-card:nth-child(2){border-top:3px solid #EC4899!important;}
+/* Formula box */
+.formula-box{color:#4F46E5!important;background:#4F46E508!important;border-color:#4F46E525!important;}
+/* btn-primary */
+.btn-primary{background:linear-gradient(135deg,#4F46E5,#EC4899)!important;}
+.btn-outline{color:#4F46E5!important;border-color:#4F46E5!important;}
+.btn-outline:hover{background:#4F46E510!important;}
+
+@keyframes fadeInUp { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<div style="background:linear-gradient(135deg,#1a0533 0%,#2d1b69 35%,#831843 70%,#1e1b4b 100%);min-height:34vh;display:flex;align-items:center;position:relative;overflow:hidden;padding-top:0;">
+  <div style="position:absolute;top:-80px;right:-80px;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle,rgba(236,72,153,0.25) 0%,transparent 65%);animation:orbBlob2 14s ease-in-out infinite;"></div>
+  <div style="position:absolute;bottom:-60px;left:8%;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.18) 0%,transparent 65%);animation:orbBlob2 20s ease-in-out infinite 4s;"></div>
+  <div style="position:absolute;top:30%;left:55%;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,0.15) 0%,transparent 65%);animation:orbBlob2 16s ease-in-out infinite 2s;"></div>
+  <style>@keyframes orbBlob2{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-24px)}}</style>
+  <div class="max-w" style="width:100%;padding:60px 24px;" data-aos="fade-up">
+    <div style="display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:100px;background:linear-gradient(135deg,rgba(236,72,153,0.3),rgba(124,58,237,0.25));color:#f9a8d4;font-size:0.78rem;font-weight:700;font-family:'Sora',sans-serif;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:16px;">🤖 Powered by Groq + Llama 3</div>
+    <h1 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(1.8rem,4vw,2.8rem);color:white;line-height:1.15;letter-spacing:-0.03em;margin-bottom:14px;">Test Your <span style="color:#818cf8;">Feature Engineering</span> Knowledge</h1>
+    <p style="color:rgba(255,255,255,0.55);font-size:1rem;max-width:520px;line-height:1.7;">Questions generated in real time by AI. Choose a topic and difficulty — get instant feedback on every answer!</p>
+  </div>
+</div>
+
+<div class="max-w" style="padding-top:48px;padding-bottom:80px;">
+
+  <!-- CONFIG PANEL -->
+  <div id="quiz-config" data-aos="fade-up">
+    <div class="card card-pad" style="margin-bottom:24px;">
+      <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:1.2rem;color:var(--text);margin-bottom:20px;">⚙️ Configure Your Quiz</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
+        <div>
+          <label>Topic</label>
+          <select id="topic-select" style="margin-top:6px;">
+            <option value="Manual Feature Creation — domain knowledge, derived features, BMI, ratios">Manual Feature Creation</option>
+            <option value="Interaction Features — products, ratios, differences, multiplicative effects">Interaction Features</option>
+            <option value="Polynomial Features — degree, overfitting, R², curve fitting">Polynomial Features</option>
+            <option value="Date-Time Derived Features — hour, day_of_week, is_weekend, cyclical encoding">Date-Time Features</option>
+            <option value="Aggregated Features — groupby, mean, std, count, customer rollups">Aggregated Features</option>
+            <option value="Correlation — Pearson r, multicollinearity, feature selection">Correlation</option>
+            <option value="Chi-Square test — categorical independence, p-value, contingency tables">Chi-Square</option>
+            <option value="ANOVA F-test — between-group variance, F-statistic, classification features">ANOVA</option>
+            <option value="Forward Selection — greedy wrapper, sequential addition, stopping criterion">Forward Selection</option>
+            <option value="Backward Elimination — p-value pruning, OLS, significance threshold">Backward Elimination</option>
+            <option value="Recursive Feature Elimination — RFE, RFECV, feature importances, sklearn">RFE</option>
+            <option value="Feature Engineering comprehensive — all topics including creation and selection">All Topics 🔥</option>
+          </select>
+        </div>
+        <div>
+          <label>Difficulty</label>
+          <select id="difficulty-select" style="margin-top:6px;">
+            <option value="beginner-friendly">🟢 Beginner</option>
+            <option value="intermediate level" selected>🟡 Intermediate</option>
+            <option value="advanced and challenging">🔴 Advanced</option>
+          </select>
+        </div>
+        <div>
+          <label>Questions</label>
+          <select id="num-select" style="margin-top:6px;">
+            <option value="3">3 — Quick Practice</option>
+            <option value="5" selected>5 — Standard</option>
+            <option value="8">8 — Deep Dive</option>
+            <option value="10">10 — Full Test</option>
+          </select>
+        </div>
+      </div>
+      <button onclick="startQuiz()" class="btn-primary" style="width:100%;justify-content:center;padding:14px;font-size:1rem;">
+        🚀 Generate Quiz with AI →
+      </button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="quiz-loading" style="display:none;text-align:center;padding:80px 0;">
+    <div style="width:64px;height:64px;border-radius:50%;border:4px solid rgba(79,70,229,0.15);border-top-color:var(--accent);animation:spin 0.8s linear infinite;margin:0 auto 24px;"></div>
+    <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:1.2rem;color:var(--text);margin-bottom:8px;">Generating your quiz...</div>
+    <p style="color:var(--text-muted);">Llama 3 is crafting personalized questions via Groq ⚡</p>
+  </div>
+
+  <!-- PROGRESS BAR (quiz) -->
+  <div id="quiz-progress-wrap" style="display:none;margin-bottom:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <span style="font-size:0.82rem;font-weight:600;color:var(--text-muted);">Quiz Progress</span>
+      <span id="progress-text" style="font-size:0.82rem;font-family:'DM Mono',monospace;color:var(--accent);">0 / 0 answered</span>
+    </div>
+    <div style="height:7px;background:var(--surface2);border-radius:4px;overflow:hidden;">
+      <div id="quiz-progress-bar" style="height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:4px;width:0%;transition:width 0.4s ease;"></div>
+    </div>
+  </div>
+
+  <!-- QUESTIONS -->
+  <div id="quiz-container" style="display:none;" class="space-y-6"></div>
+
+  <!-- RESULTS -->
+  <div id="quiz-results" style="display:none;margin-top:32px;">
+    <div id="score-card" style="background:linear-gradient(135deg,#0f172a,#1e1b4b);border-radius:24px;padding:40px;text-align:center;margin-bottom:20px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(79,70,229,0.2) 0%,transparent 70%);"></div>
+      <div id="score-emoji" style="font-size:4rem;margin-bottom:16px;">🏆</div>
+      <div id="score-display" style="font-family:'Sora',sans-serif;font-weight:800;color:white;font-size:3.5rem;letter-spacing:-0.04em;margin-bottom:4px;"></div>
+      <div id="score-percent" style="font-family:'Sora',sans-serif;font-weight:700;color:#818cf8;font-size:1.2rem;margin-bottom:8px;"></div>
+      <div id="score-label" style="color:rgba(255,255,255,0.6);font-size:0.95rem;margin-bottom:28px;"></div>
+      <div id="score-breakdown" style="display:flex;justify-content:center;gap:20px;margin-bottom:28px;flex-wrap:wrap;"></div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button onclick="retakeQuiz()" class="btn-primary">↺ Retake Quiz</button>
+        <button onclick="newQuiz()" style="padding:10px 22px;border-radius:12px;background:rgba(255,255,255,0.1);color:white;border:1.5px solid rgba(255,255,255,0.25);font-weight:700;font-size:0.88rem;cursor:pointer;">New Topic</button>
+      </div>
+    </div>
+    <div id="ai-message-card" style="background:var(--surface);border:1.5px solid rgba(79,70,229,0.2);border-radius:20px;padding:28px;box-shadow:var(--shadow);display:none;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;">🤖</div>
+        <div>
+          <div style="font-family:'Sora',sans-serif;font-weight:700;color:var(--text);font-size:0.9rem;">Neelu's Feedback</div>
+          <div style="font-size:0.72rem;color:var(--text-muted);">Personalized · Powered by Llama 3</div>
+        </div>
+        <div id="msg-loading-dot" style="margin-left:auto;width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse-dot 1s ease-in-out infinite;"></div>
+      </div>
+      <div id="ai-message-text" style="color:var(--text-muted);font-size:0.92rem;line-height:1.8;font-style:italic;min-height:48px;"></div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let questions = [], userAnswers = [], answeredFlags = [], score = 0, currentTopic = '';
+
+async function startQuiz() {
+  currentTopic = document.getElementById('topic-select').value;
+  const difficulty = document.getElementById('difficulty-select').value;
+  const num = parseInt(document.getElementById('num-select').value);
+  
+  document.getElementById('quiz-config').style.display = 'none';
+  document.getElementById('quiz-loading').style.display = 'block';
+
+  try {
+    const res = await fetch('/api/generate-quiz', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic: currentTopic, difficulty, num_questions: num })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    questions = data.questions;
+    userAnswers = new Array(questions.length).fill(null);
+    answeredFlags = new Array(questions.length).fill(false);
+    score = 0;
+    renderQuestions();
+  } catch (e) {
+    document.getElementById('quiz-loading').style.display = 'none';
+    document.getElementById('quiz-config').style.display = 'block';
+    alert('Error generating quiz. Please check your Groq API key in app.py!\n\n' + e.message);
+  }
+}
+
+function renderQuestions() {
+  document.getElementById('quiz-loading').style.display = 'none';
+  document.getElementById('quiz-progress-wrap').style.display = 'block';
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  
+  questions.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.id = `qcard-${qi}`;
+    card.style.cssText = 'background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;animation:fadeInUp 0.4s ease;animation-delay:'+qi*0.08+'s;animation-fill-mode:both;box-shadow:var(--shadow);';
+    const opts = q.options.map((opt,oi)=>`
+      <div class="qopt" id="qopt-${qi}-${oi}" onclick="pickOption(${qi},${oi})">
+        <div class="qopt-letter">${letters[oi]}</div>
+        <div class="qopt-text">${opt}</div>
+      </div>`).join('');
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <span style="background:var(--accent);color:white;border-radius:8px;padding:3px 10px;font-family:'Sora',sans-serif;font-weight:700;font-size:0.75rem;">Q${qi+1}</span>
+        <p style="font-weight:700;color:var(--text);line-height:1.55;font-size:0.95rem;margin:0;">${q.question}</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;" id="opts-${qi}">${opts}</div>
+      <div id="expl-${qi}" class="expl-box" style="display:none;"></div>`;
+    container.appendChild(card);
+  });
+  container.style.display = 'block';
+  updateProgress();
+}
+
+function pickOption(qi, oi) {
+  if (answeredFlags[qi]) return;
+  answeredFlags[qi] = true;
+  userAnswers[qi] = oi;
+  const correct = questions[qi].correct;
+  const isRight = oi === correct;
+  if (isRight) score++;
+  ['A','B','C','D'].forEach((_,i) => {
+    const el = document.getElementById(`qopt-${qi}-${i}`);
+    if (!el) return;
+    el.classList.add('locked');
+    if (i === correct) el.classList.add('correct');
+    else if (i === oi && !isRight) el.classList.add('wrong');
+    else el.classList.add('dimmed');
+  });
+  document.getElementById(`qcard-${qi}`).style.borderColor = isRight ? '#10b981' : '#ef4444';
+  const expl = document.getElementById(`expl-${qi}`);
+  expl.style.display = 'block';
+  expl.style.background = isRight ? 'rgba(16,185,129,0.09)' : 'rgba(239,68,68,0.07)';
+  expl.style.border = `1px solid ${isRight ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.2)'}`;
+  expl.style.color = isRight ? '#065f46' : '#7f1d1d';
+  expl.innerHTML = `<strong>${isRight ? '✓ Correct!' : '✗ Incorrect.'}</strong> ${questions[qi].explanation}`;
+  updateProgress();
+  if (answeredFlags.every(Boolean)) setTimeout(showResults, 900);
+}
+
+function updateProgress() {
+  const done = answeredFlags.filter(Boolean).length, total = questions.length;
+  document.getElementById('progress-text').textContent = `${done} / ${total} answered`;
+  document.getElementById('quiz-progress-bar').style.width = (total ? Math.round(done/total*100) : 0) + '%';
+}
+
+function showResults() {
+  const total = questions.length, pct = Math.round(score/total*100);
+  const tiers = [
+    {min:0,emoji:'😅',label:"Keep going — every attempt teaches you something new, GUVIan!"},
+    {min:40,emoji:'🤔',label:"Getting there! A little more review will make a big difference."},
+    {min:60,emoji:'👍',label:"Solid effort, GUVIan! You've got the core concepts down."},
+    {min:80,emoji:'🎉',label:"Great work! You clearly understand Feature Engineering well."},
+    {min:100,emoji:'🏆',label:"Perfect score! You've mastered this topic, GUVIan! 🚀"},
+  ];
+  const tier = [...tiers].reverse().find(t => pct >= t.min) || tiers[0];
+  document.getElementById('score-emoji').textContent = tier.emoji;
+  document.getElementById('score-display').textContent = `${score} / ${total}`;
+  document.getElementById('score-percent').textContent = `${pct}%`;
+  document.getElementById('score-label').textContent = tier.label;
+  document.getElementById('score-breakdown').innerHTML = `
+    <div style="background:rgba(16,185,129,0.15);border-radius:100px;padding:8px 20px;display:flex;align-items:center;gap:8px;"><span>✅</span><span style="font-family:'Sora',sans-serif;font-weight:700;color:white;">${score} Correct</span></div>
+    <div style="background:rgba(239,68,68,0.18);border-radius:100px;padding:8px 20px;display:flex;align-items:center;gap:8px;"><span>❌</span><span style="font-family:'Sora',sans-serif;font-weight:700;color:white;">${total-score} Wrong</span></div>`;
+  document.getElementById('quiz-results').style.display = 'block';
+  document.getElementById('quiz-results').scrollIntoView({behavior:'smooth',block:'start'});
+  fetchPersonalizedMessage(score, total, pct);
+}
+
+async function fetchPersonalizedMessage(score, total, pct) {
+  const msgCard = document.getElementById('ai-message-card');
+  msgCard.style.display = 'block';
+  document.getElementById('ai-message-text').textContent = 'Generating your personalized feedback from Neelu…';
+  const wrongQs = questions.map((q,i)=>({q,chosen:userAnswers[i]})).filter(({q,chosen})=>chosen!==q.correct).map(({q})=>({question:q.question,correct_answer:q.options[q.correct]}));
+  try {
+    const res = await fetch('/api/personalized-message',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({score,total,topic:currentTopic,wrong_questions:wrongQs})});
+    const data = await res.json();
+    document.getElementById('msg-loading-dot').style.display='none';
+    const el = document.getElementById('ai-message-text'); el.textContent='';
+    const msg = data.message||'Keep learning and retake the quiz, GUVIan! 🚀';
+    let i=0; const iv=setInterval(()=>{if(i<msg.length){el.textContent+=msg[i++];}else clearInterval(iv);},18);
+  } catch {
+    document.getElementById('msg-loading-dot').style.display='none';
+    document.getElementById('ai-message-text').textContent=`Great effort, GUVIan! Keep exploring Feature Engineering and you'll master it! 🚀`;
+  }
+}
+
+function retakeQuiz() { resetState(); startQuiz(); }
+function newQuiz() { resetState(); document.getElementById('quiz-config').style.display='block'; }
+function resetState() {
+  questions=[];userAnswers=[];answeredFlags=[];score=0;
+  document.getElementById('quiz-results').style.display='none';
+  document.getElementById('quiz-container').style.display='none';
+  document.getElementById('quiz-container').innerHTML='';
+  document.getElementById('quiz-progress-wrap').style.display='none';
+  document.getElementById('ai-message-card').style.display='none';
+  document.getElementById('msg-loading-dot').style.display='block';
+  document.getElementById('quiz-progress-bar').style.width='0%';
+}
+</script>
+{% endblock %}

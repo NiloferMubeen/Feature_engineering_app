@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block title %}Backward Elimination — Feature Selection{% endblock %}
+{% block page_name %}Backward Elimination{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="hero-blob-1"></div>
+  <div class="hero-blob-2"></div>
+  <div class="max-w">
+    <div data-aos="fade-up">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+        <a href="/" style="font-size:0.83rem;color:var(--text-muted);text-decoration:none;">Home</a>
+        <span style="color:var(--text-muted);">/</span>
+        <span style="font-size:0.83rem;font-weight:600;color:var(--accent2);">Feature Selection</span>
+      </div>
+      <div class="hero-chip" style="background:rgba(6,182,212,0.1);color:var(--accent2);">🎯 Module 10 · Feature Selection</div>
+      <h1 class="hero-title">Backward <span style="color:var(--accent2);">Elimination</span></h1>
+      <p class="hero-desc">Start with ALL features and iteratively prune the least significant one — until only the most meaningful features remain.</p>
+    </div>
+  </div>
+</div>
+
+<div class="max-w" style="padding-top:48px;padding-bottom:80px;">
+  <div class="content-grid">
+    <div style="display:flex;flex-direction:column;gap:48px;">
+
+      <div data-aos="fade-up">
+        <div class="section-label">The Concept</div>
+        <h2 class="section-title">Pruning from <span class="g">Full Model</span></h2>
+        <p class="section-desc" style="margin-bottom:14px;">Backward Elimination starts with all features in the model and removes them one by one. At each step, the feature with the <strong style="color:var(--text);">highest p-value</strong> (least statistically significant) is removed.</p>
+        <p class="section-desc">The process stops when all remaining features have p-values below a significance threshold (usually 0.05). Unlike forward selection, it starts with the full model — capturing all interactions from the start.</p>
+      </div>
+
+      <div data-aos="fade-up">
+        <div class="section-label">Real-World Examples</div>
+        <h2 class="section-title">Backward Elimination <span class="g">in Action</span></h2>
+        <div class="example-grid">
+          <div class="example-card">
+            <div class="example-tag">🏥 Clinical Research</div>
+            <div class="example-title">Treatment Outcome Study</div>
+            <div class="example-desc">Researchers start with 15 patient variables. Backward elimination removes non-significant ones (age, weight, etc.) until only the 4 truly predictive factors remain in the final regression model.</div>
+          </div>
+          <div class="example-card">
+            <div class="example-tag">📦 Logistics</div>
+            <div class="example-title">Delivery Time Prediction</div>
+            <div class="example-desc">Starting with weather, distance, time-of-day, carrier, day-of-week, package-type etc. Backward elimination finds that only distance, carrier, and time-of-day truly matter.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE DEMO -->
+      <div data-aos="fade-up">
+        <div class="section-label">🎮 Interactive Demo</div>
+        <h2 class="section-title">Backward Elimination <span class="g">Simulator</span></h2>
+        <p class="section-desc" style="margin-bottom:20px;">All features start in the model. Click "Eliminate Worst" to remove the least significant feature (highest p-value above 0.05) one step at a time!</p>
+        
+        <div class="demo-card">
+          <div class="demo-header">
+            <div class="demo-dot" style="background:#ef4444;"></div>
+            <div class="demo-dot" style="background:#f59e0b;"></div>
+            <div class="demo-dot" style="background:#10b981;"></div>
+            <span style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-left:8px;">backward_elimination.py</span>
+          </div>
+          <div class="demo-body">
+            <div style="margin-bottom:16px;">
+              <div class="section-label" style="margin-bottom:8px;">Current Model (p-values shown — red = eliminate)</div>
+              <div id="feature-table" style="display:flex;flex-direction:column;gap:6px;"></div>
+            </div>
+            <div style="display:flex;gap:10px;margin-bottom:16px;">
+              <button class="btn-primary" onclick="eliminateWorst()" id="elim-btn" style="background:#ef4444;">🗑️ Eliminate Worst Feature</button>
+              <button class="btn-outline" onclick="resetElim()">↺ Reset</button>
+            </div>
+            <div id="elim-log" style="display:flex;flex-direction:column;gap:6px;margin-top:8px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div data-aos="fade-up">
+        <div class="section-label">Python Code</div>
+        <h2 class="section-title">statsmodels <span class="g">Implementation</span></h2>
+        <div class="code-block">
+<span class="kw">import</span> statsmodels.api <span class="kw">as</span> sm<br/><br/>
+<span class="kw">def</span> <span class="fn">backward_elimination</span>(X, y, threshold=<span class="num">0.05</span>):<br/>
+&nbsp;&nbsp;features = list(X.columns)<br/>
+&nbsp;&nbsp;<span class="kw">while</span> <span class="kw">True</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;model = sm.OLS(y, sm.<span class="fn">add_constant</span>(X[features])).<span class="fn">fit</span>()<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;p_vals = model.pvalues[<span class="num">1</span>:]  <span class="cm"># skip intercept</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;max_p = p_vals.<span class="fn">max</span>()<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> max_p &gt; threshold:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;worst = p_vals.<span class="fn">idxmax</span>()<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;features.<span class="fn">remove</span>(worst)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">else</span>: <span class="kw">break</span><br/>
+&nbsp;&nbsp;<span class="kw">return</span> features
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="key-terms-box" data-aos="fade-left">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:16px;">🔑 Key Terms</div>
+        <div class="key-term-item">
+          <div class="key-term-badge">p-value</div>
+          <div><div class="key-term-name">p-value</div><div class="key-term-def">Probability of the coefficient being non-zero by chance. p > 0.05 → feature is not significant → eliminate.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Significance α</div>
+          <div><div class="key-term-name">Significance Threshold</div><div class="key-term-def">Typically 0.05 (5%). Features with p > α are candidates for elimination.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">OLS</div>
+          <div><div class="key-term-name">Ordinary Least Squares</div><div class="key-term-def">Linear regression method that provides p-values for each feature coefficient.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">vs Forward</div>
+          <div><div class="key-term-name">vs Forward Selection</div><div class="key-term-def">Forward builds up; backward prunes down. Backward is better when most features are relevant.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const initialFeatures = [
+  { name: 'area_sqft',       pval: 0.0001, coef: 0.82, icon: '📐' },
+  { name: 'location_score',  pval: 0.0012, coef: 0.54, icon: '📍' },
+  { name: 'num_bedrooms',    pval: 0.0234, coef: 0.31, icon: '🛏️' },
+  { name: 'age_years',       pval: 0.0412, coef: -0.21, icon: '🏛️' },
+  { name: 'floor_num',       pval: 0.0821, coef: 0.12, icon: '🏢' },
+  { name: 'near_park',       pval: 0.1543, coef: 0.09, icon: '🌳' },
+  { name: 'garage_size',     pval: 0.2890, coef: 0.07, icon: '🚗' },
+  { name: 'paint_color_code',pval: 0.4521, coef: 0.02, icon: '🎨' },
+  { name: 'lot_shape_code',  pval: 0.7812, coef: 0.01, icon: '📏' },
+];
+
+let features;
+let stepCount = 0;
+
+function resetElim() {
+  features = initialFeatures.map(f=>({...f}));
+  stepCount = 0;
+  document.getElementById('elim-log').innerHTML = '';
+  document.getElementById('elim-btn').disabled = false;
+  document.getElementById('elim-btn').textContent = '🗑️ Eliminate Worst Feature';
+  renderFeatureTable();
+}
+
+function renderFeatureTable() {
+  const el = document.getElementById('feature-table');
+  const sorted = [...features].sort((a,b)=>b.pval-a.pval);
+  const worst = sorted[0];
+  el.innerHTML = features.map(f=>{
+    const isWorst = f.name === worst.name && worst.pval > 0.05;
+    const sig = f.pval <= 0.05;
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:${isWorst?'rgba(239,68,68,0.08)':sig?'rgba(16,185,129,0.06)':'var(--surface2)'};border:1.5px solid ${isWorst?'rgba(239,68,68,0.35)':sig?'rgba(16,185,129,0.25)':'var(--border)'};transition:all 0.3s;">
+      <span>${f.icon}</span>
+      <div style="flex:1;font-family:'DM Mono',monospace;font-weight:700;font-size:0.8rem;color:${isWorst?'#ef4444':sig?'#10b981':'var(--text)'};">${f.name}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);">coef: ${f.coef>0?'+':''}${f.coef}</div>
+      <div style="font-family:'DM Mono',monospace;font-weight:700;font-size:0.82rem;color:${f.pval<0.001?'#10b981':f.pval<0.05?'#f59e0b':'#ef4444'};">p=${f.pval.toFixed(4)}</div>
+      <span style="font-size:0.72rem;font-weight:700;padding:3px 8px;border-radius:5px;background:${sig?'rgba(16,185,129,0.15)':'rgba(239,68,68,0.15)'};color:${sig?'#10b981':'#ef4444'};">${sig?'KEEP':'REMOVE'}</span>
+    </div>`;
+  }).join('');
+  
+  const hasRemovable = features.some(f=>f.pval>0.05);
+  document.getElementById('elim-btn').disabled = !hasRemovable;
+  if (!hasRemovable) {
+    document.getElementById('elim-btn').textContent = '✅ All Features Significant!';
+    document.getElementById('elim-btn').style.background = '#10b981';
+  }
+}
+
+function eliminateWorst() {
+  const worst = features.reduce((a,b)=>b.pval>a.pval?b:a);
+  if (worst.pval <= 0.05) return;
+  stepCount++;
+  features = features.filter(f=>f.name!==worst.name);
+  // Slightly adjust remaining p-values to simulate model refitting
+  features.forEach(f=>{ f.pval = Math.max(0.0001, f.pval * (0.85+Math.random()*0.1)); });
+  
+  const log = document.getElementById('elim-log');
+  const entry = document.createElement('div');
+  entry.style.cssText='padding:10px 14px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:10px;font-size:0.82rem;animation:msgIn 0.3s ease;';
+  entry.innerHTML=`<strong style="color:#ef4444;">Step ${stepCount} — Eliminated:</strong> <code style="color:var(--accent);font-family:'DM Mono',monospace;">${worst.name}</code> (p=${worst.pval.toFixed(4)} > 0.05) · <strong>${features.length} features remain</strong>`;
+  log.insertBefore(entry, log.firstChild);
+  renderFeatureTable();
+}
+
+resetElim();
+</script>
+{% endblock %}

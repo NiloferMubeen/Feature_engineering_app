@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Feature Engineering{% endblock %}</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet"/>
+  <style>
+    :root{--bg:#f8fafc;--surface:#ffffff;--surface2:#f1f5f9;--border:rgba(0,0,0,0.08);--text:#0f172a;--text-muted:#64748b;--accent:#4F46E5;--accent2:#06b6d4;--accent3:#10b981;--accent-light:rgba(79,70,229,0.08);--shadow:0 4px 24px rgba(0,0,0,0.07);--shadow-lg:0 8px 40px rgba(0,0,0,0.12);--nav-bg:rgba(255,255,255,0.92);--chip-bg:rgba(79,70,229,0.1);}
+    html.dark{--bg:#0c0f1a;--surface:#151929;--surface2:#1e2438;--border:rgba(255,255,255,0.08);--text:#f1f5f9;--text-muted:#94a3b8;--accent:#818cf8;--accent2:#22d3ee;--accent3:#34d399;--accent-light:rgba(129,140,248,0.12);--shadow:0 4px 24px rgba(0,0,0,0.3);--shadow-lg:0 8px 40px rgba(0,0,0,0.5);--nav-bg:rgba(21,25,41,0.95);--chip-bg:rgba(129,140,248,0.15);}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s;min-height:100vh;}
+
+    /* NAV */
+    .main-nav{position:fixed;top:0;left:0;right:0;z-index:300;background:var(--nav-bg);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;transition:background .3s;}
+    .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+    .nav-logo img{height:36px;}
+    .nav-center{display:flex;align-items:stretch;gap:0;height:60px;}
+    .nav-right{display:flex;align-items:center;gap:10px;}
+    .nav-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;font-size:.82rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s;border:1.5px solid transparent;}
+    .nav-btn-outline{border-color:var(--border);color:var(--text-muted);background:transparent;}
+    .nav-btn-outline:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+    .nav-btn-primary{background:var(--accent);color:white;}
+    .nav-btn-primary:hover{opacity:.88;transform:translateY(-1px);}
+    .theme-toggle{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:7px 10px;cursor:pointer;color:var(--text-muted);transition:all .2s;}
+    .theme-toggle:hover{color:var(--accent);border-color:var(--accent);}
+
+    /* NAV PLAIN LINKS */
+    .nav-plain-link{display:flex;align-items:center;gap:5px;padding:0 12px;height:60px;font-size:.84rem;font-weight:600;color:var(--text-muted);text-decoration:none;position:relative;transition:color .2s;white-space:nowrap;}
+    .nav-plain-link::after{content:'';position:absolute;bottom:0;left:12px;right:12px;height:2px;background:var(--accent);border-radius:2px 2px 0 0;transform:scaleX(0);transition:transform .2s;}
+    .nav-plain-link:hover{color:var(--text);}
+    .nav-plain-link:hover::after{transform:scaleX(1);}
+    .nav-plain-active{color:var(--accent);}
+    .nav-plain-active::after{transform:scaleX(1)!important;}
+
+    /* DROPDOWNS */
+    .nav-dropdown{position:relative;display:flex;align-items:center;height:60px;}
+    .nav-dropdown-btn{
+      display:flex;align-items:center;gap:5px;
+      padding:0 12px;height:100%;
+      border:none;background:transparent;
+      font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:600;
+      color:var(--text-muted);cursor:pointer;white-space:nowrap;
+      position:relative;transition:color .2s;
+    }
+    .nav-dropdown-btn::after{
+      content:'';position:absolute;bottom:0;left:12px;right:12px;height:2px;
+      background:var(--accent);border-radius:2px 2px 0 0;
+      transform:scaleX(0);transition:transform .2s;
+    }
+    .nav-dropdown-btn:hover{color:var(--text);}
+    .nav-dropdown-btn:hover::after{transform:scaleX(1);}
+    .nav-dropdown-btn.active{color:var(--accent);}
+    .nav-dropdown-btn.active::after{transform:scaleX(1);}
+    .nav-dropdown-btn .chevron{transition:transform .22s;flex-shrink:0;opacity:.55;}
+    .nav-dropdown-btn:hover .chevron,.nav-dropdown-btn.active .chevron{opacity:1;}
+    .nav-dropdown-btn.active .chevron{transform:rotate(180deg);}
+    .selection-dropdown .nav-dropdown-btn.active{color:var(--accent2);}
+    .selection-dropdown .nav-dropdown-btn::after{background:var(--accent2);}
+    .nav-dropdown-menu{
+      position:absolute;top:calc(100% + 2px);left:50%;transform:translateX(-50%) translateY(-8px);
+      background:var(--surface);border:1.5px solid var(--border);border-radius:18px;
+      box-shadow:var(--shadow-lg);min-width:240px;z-index:400;
+      opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;
+      padding:8px;
+    }
+    .nav-dropdown-menu.open{opacity:1;pointer-events:all;transform:translateX(-50%) translateY(0);}
+    .nav-dropdown-header{padding:8px 12px 6px;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);}
+    .nav-dropdown-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;text-decoration:none;transition:background .15s,color .15s;cursor:pointer;}
+    .nav-dropdown-item:hover{background:var(--accent-light);}
+    .nav-dropdown-item:hover .ddi-title{color:var(--accent);}
+    .nav-dropdown-item.current{background:var(--accent-light);}
+    .nav-dropdown-item.current .ddi-title{color:var(--accent);font-weight:700;}
+    .ddi-num{font-family:'DM Mono',monospace;font-size:.68rem;font-weight:700;color:var(--accent);background:var(--accent-light);padding:2px 6px;border-radius:5px;flex-shrink:0;min-width:24px;text-align:center;}
+    .nav-dropdown-item.current .ddi-num{background:var(--accent);color:white;}
+    .ddi-title{font-size:.82rem;font-weight:600;color:var(--text);line-height:1.3;}
+    .ddi-desc{font-size:.7rem;color:var(--text-muted);margin-top:1px;}
+    .dropdown-divider{height:1px;background:var(--border);margin:6px 0;}
+    .selection-dropdown .nav-dropdown-header{color:var(--accent2);}
+    .selection-dropdown .ddi-num{color:var(--accent2);background:rgba(6,182,212,.1);}
+    .selection-dropdown .nav-dropdown-item.current .ddi-num{background:var(--accent2);color:white;}
+    .selection-dropdown .nav-dropdown-item:hover{background:rgba(6,182,212,.08);}
+    .selection-dropdown .nav-dropdown-item:hover .ddi-title{color:var(--accent2);}
+    .selection-dropdown .nav-dropdown-item.current .ddi-title{color:var(--accent2);}
+
+    /* PROGRESS */
+    .progress-strip{position:fixed;top:60px;left:0;right:0;z-index:99;background:var(--surface2);height:4px;}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .6s cubic-bezier(.4,0,.2,1);border-radius:0 4px 4px 0;}
+    .progress-label{position:fixed;top:64px;right:24px;z-index:98;padding:3px 12px;background:var(--surface);border:1px solid var(--border);border-radius:0 0 10px 10px;font-size:.72rem;font-weight:700;color:var(--text-muted);}
+
+    .page-wrap{padding-top:68px;min-height:100vh;}
+
+    /* HERO */
+    .page-hero{background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);border-bottom:1px solid var(--border);padding:60px 0 48px;}
+    .hero-chip{display:inline-flex;align-items:center;gap:8px;padding:7px 18px;border-radius:100px;background:var(--chip-bg);color:var(--accent);font-size:.88rem;font-weight:700;font-family:'Sora',sans-serif;text-transform:uppercase;letter-spacing:.06em;margin-bottom:20px;}
+    h1.hero-title{font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(2.2rem,4.5vw,3.4rem);line-height:1.1;color:var(--text);letter-spacing:-.03em;margin-bottom:16px;}
+    h1.hero-title .accent{color:var(--accent);}
+    .hero-desc{font-size:1.2rem;color:var(--text-muted);max-width:580px;line-height:1.75;}
+
+    /* SECTIONS */
+    .section-label{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:8px;}
+    h2.section-title{font-family:'Sora',sans-serif;font-weight:700;font-size:1.5rem;color:var(--text);margin-bottom:12px;}
+    h2.section-title .g{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .section-desc{color:var(--text-muted);line-height:1.75;font-size:.95rem;}
+
+    /* CARDS */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;}
+    .card-pad{padding:28px;}
+    .demo-card{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);}
+    .demo-header{background:var(--surface2);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;gap:10px;}
+    .demo-dot{width:10px;height:10px;border-radius:50%;}
+    .demo-body{padding:24px;}
+
+    /* BUTTONS */
+    .btn-primary{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:12px;background:var(--accent);color:white;font-weight:700;font-size:.88rem;font-family:'DM Sans',sans-serif;cursor:pointer;border:none;transition:all .2s;}
+    .btn-primary:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 6px 20px rgba(79,70,229,.35);}
+    .btn-outline{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:12px;background:transparent;color:var(--accent);border:1.5px solid var(--accent);font-weight:700;font-size:.88rem;cursor:pointer;transition:all .2s;text-decoration:none;}
+    .btn-outline:hover{background:var(--accent-light);}
+
+    /* KEY TERMS */
+    .key-terms-box{background:var(--surface);border:1.5px solid var(--border);border-radius:18px;padding:22px;}
+    .key-term-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+    .key-term-item:last-child{border-bottom:none;}
+    .key-term-badge{font-family:'DM Mono',monospace;font-size:.75rem;font-weight:700;color:var(--accent);background:var(--accent-light);padding:3px 10px;border-radius:6px;white-space:nowrap;height:fit-content;margin-top:2px;}
+    .key-term-def{font-size:.88rem;color:var(--text-muted);line-height:1.6;}
+    .key-term-name{font-weight:700;color:var(--text);font-size:.9rem;margin-bottom:2px;}
+
+    /* BOTTOM NAV */
+    .page-nav-bottom{border-top:1px solid var(--border);background:var(--surface);padding:24px 0;margin-top:64px;}
+    .page-nav-inner{max-width:1100px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;}
+
+    /* CHATBOT */
+    #chatbot-btn{position:fixed;bottom:28px;right:28px;z-index:200;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;cursor:pointer;box-shadow:0 8px 28px rgba(79,70,229,.45);display:flex;align-items:center;justify-content:center;transition:transform .2s,box-shadow .2s;color:white;font-size:1.4rem;}
+    #chatbot-btn:hover{transform:scale(1.08);box-shadow:0 12px 36px rgba(79,70,229,.55);}
+    #chatbot-panel{position:fixed;bottom:98px;right:28px;z-index:200;width:370px;max-height:540px;background:var(--surface);border:1.5px solid var(--border);border-radius:24px;box-shadow:var(--shadow-lg);display:none;flex-direction:column;overflow:hidden;}
+    #chatbot-panel.open{display:flex;}
+    .chat-header{background:linear-gradient(135deg,var(--accent),var(--accent2));padding:16px 20px;display:flex;align-items:center;gap:12px;}
+    .chat-avatar{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
+    .chat-title{font-family:'Sora',sans-serif;font-weight:700;color:white;font-size:.95rem;}
+    .chat-subtitle{color:rgba(255,255,255,.75);font-size:.72rem;}
+    .chat-close{margin-left:auto;background:rgba(255,255,255,.2);border:none;border-radius:8px;padding:5px 8px;color:white;cursor:pointer;font-size:.9rem;}
+    .chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;min-height:0;}
+    .chat-msg{max-width:85%;padding:10px 14px;border-radius:16px;font-size:.85rem;line-height:1.6;animation:msgIn .2s ease;}
+    @keyframes msgIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+    .chat-msg.bot{background:var(--surface2);color:var(--text);border-radius:4px 16px 16px 16px;align-self:flex-start;}
+    .chat-msg.user{background:var(--accent);color:white;border-radius:16px 4px 16px 16px;align-self:flex-end;}
+    .chat-input-row{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border);background:var(--surface);}
+    .chat-input{flex:1;padding:9px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;}
+    .chat-input:focus{border-color:var(--accent);}
+    .chat-send{background:var(--accent);color:white;border:none;border-radius:10px;padding:9px 14px;cursor:pointer;font-size:1rem;transition:opacity .2s;}
+    .chat-send:hover{opacity:.85;}
+
+    /* EXAMPLES */
+    .example-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;}
+    .example-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:20px;}
+    .example-tag{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--accent2);margin-bottom:8px;}
+    .example-title{font-family:'Sora',sans-serif;font-weight:700;font-size:.95rem;color:var(--text);margin-bottom:8px;}
+    .example-desc{font-size:.85rem;color:var(--text-muted);line-height:1.65;}
+
+    /* CODE */
+    .code-block{background:#0f172a;border-radius:12px;padding:18px;font-family:'DM Mono',monospace;font-size:.8rem;line-height:1.8;color:#e2e8f0;overflow-x:auto;margin:12px 0;}
+    .code-block .kw{color:#818cf8;}.code-block .fn{color:#34d399;}.code-block .str{color:#fbbf24;}.code-block .cm{color:#475569;}.code-block .num{color:#fb923c;}
+
+    /* LAYOUT */
+    .content-grid{display:grid;grid-template-columns:1fr 320px;gap:32px;}
+    @media(max-width:900px){.content-grid{grid-template-columns:1fr;}}
+    .max-w{max-width:1100px;margin:0 auto;padding:0 24px;}
+
+    /* FORMS */
+    input[type=range]{accent-color:var(--accent);}
+    select,input[type=text],input[type=number],input[type=date],input[type=time]{background:var(--surface2);color:var(--text);border:1.5px solid var(--border);border-radius:10px;padding:9px 14px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s;width:100%;}
+    select:focus,input:focus{border-color:var(--accent);}
+    label{font-size:.85rem;font-weight:600;color:var(--text-muted);display:block;margin-bottom:6px;}
+
+    /* QUIZ */
+    .qopt{display:flex;align-items:center;gap:14px;padding:14px 18px;border:2px solid var(--border);border-radius:14px;cursor:pointer;transition:all .15s;background:var(--surface);user-select:none;}
+    .qopt:hover:not(.locked){border-color:var(--accent);background:var(--accent-light);transform:translateX(3px);}
+    .qopt-letter{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;font-family:'Sora',sans-serif;flex-shrink:0;background:var(--accent-light);color:var(--accent);transition:all .2s;}
+    .qopt-text{font-size:.92rem;color:var(--text);line-height:1.45;flex:1;}
+    .qopt.selected{border-color:var(--accent);background:var(--accent-light);}
+    .qopt.selected .qopt-letter{background:var(--accent);color:white;}
+    .qopt.correct{border-color:#10b981;background:rgba(16,185,129,.08);animation:correctPop .4s ease;}
+    .qopt.correct .qopt-letter{background:#10b981;color:white;}
+    .qopt.wrong{border-color:#ef4444;background:rgba(239,68,68,.07);animation:wrongShake .4s ease;}
+    .qopt.wrong .qopt-letter{background:#ef4444;color:white;}
+    .qopt.dimmed{opacity:.4;}
+    .qopt.locked{cursor:default;}
+    .expl-box{padding:14px 18px;border-radius:12px;font-size:.88rem;line-height:1.65;margin-top:12px;}
+    @keyframes correctPop{0%{transform:scale(1);}50%{transform:scale(1.02);}100%{transform:scale(1);}}
+    @keyframes wrongShake{0%,100%{transform:translateX(0);}25%,75%{transform:translateX(-5px);}50%{transform:translateX(5px);}}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    @keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:.3;}}
+    @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-18px);}}
+
+    /* STAT PILLS */
+    .stat-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:100px;background:var(--surface2);border:1px solid var(--border);font-size:.82rem;color:var(--text-muted);}
+    .stat-pill svg{width:16px;height:16px;}
+    .formula-box{background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;padding:14px 18px;font-family:'DM Mono',monospace;font-size:.85rem;color:var(--accent);margin:10px 0;}
+    .result-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);margin:6px 0;}
+    .result-label{font-size:.82rem;color:var(--text-muted);font-weight:600;}
+    .result-val{font-family:'DM Mono',monospace;font-size:.9rem;font-weight:700;color:var(--accent);}
+    .new-badge{font-size:.65rem;background:var(--accent);color:white;padding:2px 7px;border-radius:4px;margin-left:6px;vertical-align:middle;}
+
+    ::-webkit-scrollbar{width:6px;height:6px;}
+    ::-webkit-scrollbar-track{background:transparent;}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+    ::-webkit-scrollbar-thumb:hover{background:var(--text-muted);}
+
+    /* ══ GLOBAL COLOUR PALETTE ══ */
+    :root{
+      --pink:#EC4899;--pink-lt:rgba(236,72,153,0.11);
+      --rose:#F43F5E;--rose-lt:rgba(244,63,94,0.10);
+      --violet:#7C3AED;--violet-lt:rgba(124,58,237,0.11);
+      --amber:#F59E0B;--amber-lt:rgba(245,158,11,0.11);
+      --teal:#14B8A6;--teal-lt:rgba(20,184,166,0.11);
+      --sky:#0EA5E9;--sky-lt:rgba(14,165,233,0.11);
+      --orange:#F97316;--orange-lt:rgba(249,115,22,0.11);
+      --emerald:#10B981;--emerald-lt:rgba(16,185,129,0.11);
+    }
+    @keyframes gradientShiftG{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+    /* ── Page hero – each page gets a unique gradient band ── */
+    .page-hero{
+      border-bottom:none!important;
+      padding:56px 0 44px;
+      position:relative;overflow:hidden;
+    }
+    /* rainbow top border */
+    .page-hero::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:4px;
+      background:linear-gradient(90deg,#4F46E5,#EC4899,#F59E0B,#10B981,#0EA5E9,#7C3AED);
+      background-size:300% 100%;animation:gradientShiftG 6s ease-in-out infinite;
+    }
+    /* soft pastel wash */
+    .page-hero::after{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(135deg,rgba(79,70,229,0.04) 0%,rgba(236,72,153,0.04) 40%,rgba(14,165,233,0.03) 70%,rgba(16,185,129,0.03) 100%);
+      pointer-events:none;
+    }
+
+    /* ── Section label – multi-colour per nth-of-type ── */
+    .section-label{
+      background:linear-gradient(135deg,var(--accent),var(--pink));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text;color:transparent!important;
+    }
+
+    /* ── Section title gradient span ── */
+    h2.section-title .g{
+      background:linear-gradient(135deg,#4F46E5,#EC4899,#F59E0B);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      background-size:200% 200%;animation:gradientShiftG 5s ease-in-out infinite;
+    }
+
+    /* ── Hero chip ── */
+    .hero-chip{
+      background:linear-gradient(135deg,rgba(79,70,229,0.10),rgba(236,72,153,0.08))!important;
+      border:1.5px solid rgba(79,70,229,0.18);
+      color:transparent!important;
+      background-clip:text!important;
+      -webkit-background-clip:text!important;
+    }
+    /* override inline color with gradient */
+    .hero-chip{
+      background:linear-gradient(135deg,rgba(79,70,229,0.1),rgba(236,72,153,0.07))!important;
+      color:#4F46E5!important;
+      -webkit-text-fill-color:#4F46E5!important;
+      border:1.5px solid rgba(124,58,237,0.22);
+    }
+
+    /* ── Demo card header – colourful dot bar ── */
+    .demo-header{
+      background:linear-gradient(135deg,rgba(79,70,229,0.06),rgba(236,72,153,0.05),rgba(14,165,233,0.04))!important;
+      border-bottom:1.5px solid rgba(79,70,229,0.12)!important;
+    }
+
+    /* ── Example cards – rotating accent borders ── */
+    .example-grid .example-card:nth-child(1){border-top:3px solid #EC4899!important;}
+    .example-grid .example-card:nth-child(2){border-top:3px solid #0EA5E9!important;}
+    .example-grid .example-card:nth-child(3){border-top:3px solid #F59E0B!important;}
+    .example-grid .example-card:nth-child(4){border-top:3px solid #10B981!important;}
+
+    .example-tag{
+      background:linear-gradient(135deg,var(--teal),var(--sky));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .example-title{color:var(--text)!important;}
+
+    /* ── Formula box – vibrant ── */
+    .formula-box{
+      background:linear-gradient(135deg,rgba(79,70,229,0.06),rgba(124,58,237,0.05))!important;
+      border:1.5px solid rgba(124,58,237,0.2)!important;
+      color:#7C3AED!important;
+    }
+
+    /* ── Result rows – alternating colour left border ── */
+    .result-row{position:relative;padding-left:18px!important;overflow:hidden;}
+    .result-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:2px;}
+    .result-row:nth-child(1)::before{background:#4F46E5;}
+    .result-row:nth-child(2)::before{background:#EC4899;}
+    .result-row:nth-child(3)::before{background:#F59E0B;}
+    .result-row:nth-child(4)::before{background:#10B981;}
+    .result-row:nth-child(5)::before{background:#0EA5E9;}
+    .result-row:nth-child(6)::before{background:#7C3AED;}
+    .result-val{
+      background:linear-gradient(135deg,#4F46E5,#EC4899);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+
+    /* ── Key terms box – rainbow top bar ── */
+    .key-terms-box{
+      border-top:4px solid transparent!important;
+      border-image:linear-gradient(90deg,#4F46E5,#EC4899,#F59E0B,#10B981) 1!important;
+      border-radius:18px!important;
+    }
+    .key-term-badge{
+      background:linear-gradient(135deg,rgba(79,70,229,0.12),rgba(236,72,153,0.08))!important;
+      color:#7C3AED!important;border:1px solid rgba(124,58,237,0.18)!important;
+    }
+
+    /* ── Buttons – vivid gradient ── */
+    .btn-primary{
+      background:linear-gradient(135deg,#4F46E5,#7C3AED)!important;
+      box-shadow:0 4px 16px rgba(79,70,229,0.3);
+    }
+    .btn-primary:hover{
+      background:linear-gradient(135deg,#4338CA,#6D28D9)!important;
+      box-shadow:0 8px 24px rgba(79,70,229,0.45)!important;
+    }
+
+    /* ── Tip/warning rows (used in forward/backward pages) ── */
+    div[style*="background:var(--surface2)"][style*="border-radius:12px"]:has(span){
+      border-left:3px solid var(--accent)!important;
+    }
+
+    /* ── Progress bar – rainbow ── */
+    .progress-fill{
+      background:linear-gradient(90deg,#4F46E5,#EC4899,#F59E0B,#10B981,#0EA5E9)!important;
+      background-size:300% 100%!important;
+      animation:gradientShiftG 4s ease-in-out infinite!important;
+    }
+
+    /* ── Page nav bottom ── */
+    .page-nav-bottom{
+      background:linear-gradient(135deg,rgba(79,70,229,0.03),rgba(236,72,153,0.02),rgba(16,185,129,0.02))!important;
+      border-top:1.5px solid rgba(79,70,229,0.1)!important;
+    }
+
+    /* ── Stat pills on inner pages ── */
+    .stat-pill{
+      border-color:rgba(79,70,229,0.18)!important;
+      background:linear-gradient(135deg,rgba(79,70,229,0.05),rgba(236,72,153,0.04))!important;
+    }
+
+    /* ── Drop zones (interaction page) ── */
+    .drop-zone.over{
+      border-color:#EC4899!important;
+      background:rgba(236,72,153,0.07)!important;
+    }
+
+    /* ── Operator buttons (interaction page) ── */
+    .operator-btn.active{
+      background:linear-gradient(135deg,rgba(79,70,229,0.12),rgba(236,72,153,0.1))!important;
+      border-color:#7C3AED!important;color:#7C3AED!important;
+    }
+
+    /* ── Quiz option cards ── */
+    .qopt:hover:not(.locked){
+      border-color:#EC4899!important;background:rgba(236,72,153,0.07)!important;
+    }
+    .qopt.selected{border-color:#7C3AED!important;background:rgba(124,58,237,0.08)!important;}
+    .qopt.selected .qopt-letter{background:linear-gradient(135deg,#4F46E5,#7C3AED)!important;color:white!important;}
+    .qopt.correct .qopt-letter{background:linear-gradient(135deg,#10B981,#14B8A6)!important;}
+
+    /* ── Footer ── */
+    footer{
+      background:linear-gradient(90deg,rgba(79,70,229,0.05),rgba(236,72,153,0.04),rgba(16,185,129,0.04))!important;
+      border-top:2px solid transparent!important;
+      border-image:linear-gradient(90deg,#4F46E5,#EC4899,#F59E0B,#10B981,#0EA5E9,#7C3AED) 1!important;
+    }
+
+    /* ── Chatbot button – rainbow ring ── */
+    #chatbot-btn{
+      background:linear-gradient(135deg,#4F46E5,#EC4899,#F59E0B)!important;
+      background-size:200% 200%!important;
+      animation:gradientShiftG 4s ease-in-out infinite!important;
+    }
+
+    /* ── Chat quick question hover ── */
+    .chat-q-card:hover{
+      border-color:#EC4899!important;
+      background:linear-gradient(135deg,rgba(236,72,153,0.07),rgba(124,58,237,0.05))!important;
+    }
+    .chat-q-card:hover .cq-text{color:#EC4899!important;}
+
+    /* CHAT QUICK QUESTIONS */
+    .chat-suggestions{padding:10px 12px 4px;display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--border);background:var(--surface);}
+    .chat-suggestions-label{font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);padding:0 2px 2px;}
+    .chat-q-card{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface2);cursor:pointer;transition:all 0.18s;text-align:left;}
+    .chat-q-card:hover{border-color:var(--accent);background:var(--accent-light);transform:translateX(3px);}
+    .chat-q-card:hover .cq-text{color:var(--accent);}
+    .chat-q-icon{font-size:0.9rem;flex-shrink:0;}
+    .cq-text{font-size:0.78rem;color:var(--text);line-height:1.4;font-weight:500;}
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="main-nav">
+  <!-- LOGO -->
+  <a href="/" class="nav-logo">
+    <img src="/static/images/logo.png" alt="Company Logo" id="logo-img" style="height:36px;" onerror="this.style.display='none';document.getElementById('logo-badge').style.display='flex';"/>
+    <div id="logo-badge" style="display:none;width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;color:white;font-size:.85rem;">FE</div>
+  </a>
+
+  <!-- CENTER DROPDOWNS -->
+  <div class="nav-center">
+
+    <!-- Home link -->
+    <a href="/" class="nav-plain-link {% if request.path == '/' %}nav-plain-active{% endif %}">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      Home
+    </a>
+
+    <!-- FEATURE CREATION DROPDOWN -->
+    <div class="nav-dropdown" id="dd-creation">
+      <button class="nav-dropdown-btn" onclick="toggleDropdown('creation')" id="btn-creation">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+        Feature Creation
+        <svg class="chevron" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div class="nav-dropdown-menu" id="menu-creation">
+        <div class="nav-dropdown-header">🔨 Feature Creation</div>
+        <a href="/manual-features" class="nav-dropdown-item {% if request.path == '/manual-features' %}current{% endif %}">
+          <span class="ddi-num">01</span>
+          <div><div class="ddi-title">Manual Feature Creation</div><div class="ddi-desc">Domain knowledge &amp; derived features</div></div>
+        </a>
+        <a href="/interaction-features" class="nav-dropdown-item {% if request.path == '/interaction-features' %}current{% endif %}">
+          <span class="ddi-num">02</span>
+          <div><div class="ddi-title">Interaction Features</div><div class="ddi-desc">Products, ratios &amp; multiplicative effects</div></div>
+        </a>
+        <a href="/polynomial-features" class="nav-dropdown-item {% if request.path == '/polynomial-features' %}current{% endif %}">
+          <span class="ddi-num">03</span>
+          <div><div class="ddi-title">Polynomial Features</div><div class="ddi-desc">Degree, overfitting &amp; curve fitting</div></div>
+        </a>
+        <a href="/datetime-features" class="nav-dropdown-item {% if request.path == '/datetime-features' %}current{% endif %}">
+          <span class="ddi-num">04</span>
+          <div><div class="ddi-title">Date-Time Features</div><div class="ddi-desc">Hour, day-of-week, cyclical encoding</div></div>
+        </a>
+        <a href="/aggregated-features" class="nav-dropdown-item {% if request.path == '/aggregated-features' %}current{% endif %}">
+          <span class="ddi-num">05</span>
+          <div><div class="ddi-title">Aggregated Features</div><div class="ddi-desc">GroupBy, mean, std &amp; rollups</div></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- FEATURE SELECTION DROPDOWN -->
+    <div class="nav-dropdown selection-dropdown" id="dd-selection">
+      <button class="nav-dropdown-btn" onclick="toggleDropdown('selection')" id="btn-selection">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Feature Selection
+        <svg class="chevron" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div class="nav-dropdown-menu" id="menu-selection">
+        <div class="nav-dropdown-header">🎯 Feature Selection</div>
+        <a href="/correlation" class="nav-dropdown-item {% if request.path == '/correlation' %}current{% endif %}">
+          <span class="ddi-num">06</span>
+          <div><div class="ddi-title">Correlation</div><div class="ddi-desc">Pearson r &amp; multicollinearity</div></div>
+        </a>
+        <a href="/chi-square" class="nav-dropdown-item {% if request.path == '/chi-square' %}current{% endif %}">
+          <span class="ddi-num">07</span>
+          <div><div class="ddi-title">Chi-Square</div><div class="ddi-desc">Categorical independence &amp; p-value</div></div>
+        </a>
+        <a href="/anova" class="nav-dropdown-item {% if request.path == '/anova' %}current{% endif %}">
+          <span class="ddi-num">08</span>
+          <div><div class="ddi-title">ANOVA</div><div class="ddi-desc">F-statistic &amp; between-group variance</div></div>
+        </a>
+        <div class="dropdown-divider"></div>
+        <div class="nav-dropdown-header" style="padding-top:4px;">⚙️ Wrapper Methods</div>
+        <a href="/forward-selection" class="nav-dropdown-item {% if request.path == '/forward-selection' %}current{% endif %}">
+          <span class="ddi-num">09</span>
+          <div><div class="ddi-title">Forward Selection</div><div class="ddi-desc">Greedy step-by-step addition</div></div>
+        </a>
+        <a href="/backward-elimination" class="nav-dropdown-item {% if request.path == '/backward-elimination' %}current{% endif %}">
+          <span class="ddi-num">10</span>
+          <div><div class="ddi-title">Backward Elimination</div><div class="ddi-desc">Prune by p-value significance</div></div>
+        </a>
+        <a href="/rfe" class="nav-dropdown-item {% if request.path == '/rfe' %}current{% endif %}">
+          <span class="ddi-num">11</span>
+          <div><div class="ddi-title">Recursive Feature Elimination</div><div class="ddi-desc">Model-based iterative pruning</div></div>
+        </a>
+        <div class="dropdown-divider"></div>
+        <a href="/quiz" class="nav-dropdown-item {% if request.path == '/quiz' %}current{% endif %}" style="margin-top:2px;">
+          <span class="ddi-num" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;">🏆</span>
+          <div><div class="ddi-title">Knowledge Quiz</div><div class="ddi-desc">AI-generated · Test all topics</div></div>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: Next + Theme -->
+  <div class="nav-right">
+    {% if next_url %}
+    <a href="{{ next_url }}" class="nav-btn nav-btn-primary" style="font-size:.8rem;padding:6px 14px;">Next →</a>
+    {% endif %}
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+      <svg id="icon-sun" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg id="icon-moon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- TOP PROGRESS -->
+<div class="progress-strip"><div class="progress-fill" style="width:{{ progress }}%"></div></div>
+<div class="progress-label">{{ current_num }} / {{ total }} &nbsp;·&nbsp; {{ progress }}%</div>
+
+<!-- PAGE -->
+<div class="page-wrap">{% block content %}{% endblock %}</div>
+
+<!-- BOTTOM NAV -->
+<div class="page-nav-bottom">
+  <div class="page-nav-inner">
+    {% if prev_url %}
+    <a href="{{ prev_url }}" class="btn-outline">← {{ prev_label }}</a>
+    {% else %}<div></div>{% endif %}
+
+    <div style="font-size:.78rem;color:var(--text-muted);text-align:center;">
+      <div style="font-weight:700;color:var(--text);font-family:'Sora',sans-serif;margin-bottom:2px;">Page {{ current_num }} of {{ total }}</div>
+      <div>{% block page_name %}{% endblock %}</div>
+    </div>
+
+    {% if next_url %}
+    <a href="{{ next_url }}" class="btn-primary">{{ next_label }} →</a>
+    {% else %}<div></div>{% endif %}
+  </div>
+</div>
+
+<!-- SITE FOOTER -->
+<footer style="background:var(--surface);border-top:1px solid var(--border);padding:16px 0;text-align:center;">
+  <span style="font-size:0.8rem;color:var(--text-muted);font-family:'DM Sans',sans-serif;letter-spacing:0.01em;">
+    Built with 💙 for <strong style="color:var(--accent);font-family:'Sora',sans-serif;">HCL GUVIans</strong>
+  </span>
+</footer>
+
+<!-- CHATBOT BUTTON -->
+<button id="chatbot-btn" onclick="toggleChat()" title="Ask Neelu">
+  <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+  </svg>
+</button>
+
+<!-- CHATBOT PANEL -->
+<div id="chatbot-panel">
+  <div class="chat-header">
+    <div class="chat-avatar">🤖</div>
+    <div>
+      <div class="chat-title">Neelu</div>
+      <div class="chat-subtitle">Your Feature Engineering Guide · GUVIans 💙</div>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-suggestions" id="chat-suggestions"></div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chat-input" type="text" placeholder="Ask Neelu anything…" onkeydown="if(event.key==='Enter')sendChat()"/>
+    <button class="chat-send" onclick="sendChat()">➤</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+AOS.init({duration:1000,once:true,offset:60,easing:"ease-out-cubic"});
+
+// THEME
+const html = document.documentElement;
+function toggleTheme(){html.classList.toggle('dark');localStorage.setItem('theme',html.classList.contains('dark')?'dark':'light');updateIcon();}
+function updateIcon(){const d=html.classList.contains('dark');document.getElementById('icon-sun').style.display=d?'block':'none';document.getElementById('icon-moon').style.display=d?'none':'block';}
+if(localStorage.getItem('theme')==='dark')html.classList.add('dark');
+updateIcon();
+
+// CHATBOT
+const CURRENT_PAGE="{{request.endpoint}}";
+let chatHistory=[], chatOpen=false;
+
+// Page-specific quick questions
+const PAGE_QUESTIONS = {
+  'home': [
+    {icon:'🔨', text:'What is Feature Creation and why does it matter?'},
+    {icon:'🎯', text:'What is the difference between Feature Creation and Feature Selection?'},
+    {icon:'🗺️', text:'How should I navigate this course as a beginner?'}
+  ],
+  'manual_features': [
+    {icon:'⚗️', text:'How do I use the Feature Calculator demo?'},
+    {icon:'💡', text:'Give me an example of a manually created feature in healthcare.'},
+    {icon:'🧠', text:'When should I use domain knowledge to engineer features?'}
+  ],
+  'interaction_features': [
+    {icon:'🔗', text:'How do I use the drag-and-drop Interaction Builder?'},
+    {icon:'➗', text:'What is the difference between a product and a ratio feature?'},
+    {icon:'⚠️', text:'How many interaction features should I create?'}
+  ],
+  'polynomial_features': [
+    {icon:'📈', text:'How do I use the curve fitting demo?'},
+    {icon:'🌀', text:'What happens when I set the degree too high?'},
+    {icon:'📐', text:'What is the difference between degree 1 and degree 3?'}
+  ],
+  'datetime_features': [
+    {icon:'⏰', text:'How do I use the Timestamp Feature Extractor?'},
+    {icon:'🔄', text:'What is cyclical encoding and why does it matter?'},
+    {icon:'📅', text:'Which date-time features are most useful for e-commerce?'}
+  ],
+  'aggregated_features': [
+    {icon:'📊', text:'How do I use the Group Aggregation Builder?'},
+    {icon:'🔢', text:'What aggregations should I compute for customer data?'},
+    {icon:'⚡', text:'What is the difference between mean and median aggregation?'}
+  ],
+  'correlation': [
+    {icon:'✏️', text:'How do I add points to the scatter plot demo?'},
+    {icon:'📉', text:'What does a Pearson r of -0.9 mean for feature selection?'},
+    {icon:'🔥', text:'How do I read the correlation heatmap?'}
+  ],
+  'chi_square': [
+    {icon:'🧪', text:'How do I use the Chi-Square Calculator demo?'},
+    {icon:'📋', text:'What does p < 0.05 mean for my feature?'},
+    {icon:'📧', text:'Why is Chi-Square used for text/spam classification?'}
+  ],
+  'anova': [
+    {icon:'🎚️', text:'How do I use the group mean sliders in the demo?'},
+    {icon:'📊', text:'What does a high F-statistic tell me about a feature?'},
+    {icon:'🆚', text:'When should I use ANOVA instead of Correlation?'}
+  ],
+  'forward_selection': [
+    {icon:'➕', text:'How do I use the Step-by-Step Forward Selection demo?'},
+    {icon:'🏆', text:'How does Forward Selection decide which feature to add next?'},
+    {icon:'🛑', text:'When should Forward Selection stop adding features?'}
+  ],
+  'backward_elimination': [
+    {icon:'🗑️', text:'How do I use the Backward Elimination demo?'},
+    {icon:'📉', text:'What p-value threshold should I use to eliminate features?'},
+    {icon:'🆚', text:'When is Backward Elimination better than Forward Selection?'}
+  ],
+  'rfe': [
+    {icon:'🎯', text:'How do I use the RFE Elimination Pyramid demo?'},
+    {icon:'🤖', text:'Which estimator should I choose in the RFE demo?'},
+    {icon:'🔢', text:'How do I pick the right number of features to keep in RFE?'}
+  ],
+  'quiz': [
+    {icon:'🎯', text:'How do I generate the quiz questions?'},
+    {icon:'🏆', text:'Which topic should I start with for the quiz?'},
+    {icon:'🔁', text:'Can I retake the quiz with different questions?'}
+  ]
+};
+
+function renderSuggestions() {
+  const page = CURRENT_PAGE || 'home';
+  const questions = PAGE_QUESTIONS[page] || PAGE_QUESTIONS['home'];
+  const box = document.getElementById('chat-suggestions');
+  box.innerHTML = '<div class="chat-suggestions-label">💬 Quick questions</div>' +
+    questions.map(q =>
+      `<button class="chat-q-card" onclick="askSuggestion(this, '${q.text.replace(/'/g,"\'")}')">
+        <span class="chat-q-icon">${q.icon}</span>
+        <span class="cq-text">${q.text}</span>
+      </button>`
+    ).join('');
+}
+
+function hideSuggestions() {
+  const box = document.getElementById('chat-suggestions');
+  if (box) { box.style.display = 'none'; }
+}
+
+function askSuggestion(btn, text) {
+  hideSuggestions();
+  document.getElementById('chat-input').value = text;
+  sendChat();
+}
+
+function toggleChat(){
+  chatOpen=!chatOpen;
+  document.getElementById('chatbot-panel').classList.toggle('open',chatOpen);
+  if(chatOpen && chatHistory.length===0){
+    appendBot("Hey GUVIan! 👋 I'm Neelu — your Feature Engineering coach! I know every demo on this page inside out. Pick a question below or ask me anything! 🚀");
+    renderSuggestions();
+  }
+  if(chatOpen)setTimeout(()=>document.getElementById('chat-input').focus(),100);
+}
+
+function appendBot(text){
+  const el=document.createElement('div');el.className='chat-msg bot';el.textContent=text;
+  document.getElementById('chat-messages').appendChild(el);
+  document.getElementById('chat-messages').scrollTop=99999;
+}
+function appendUser(text){
+  const el=document.createElement('div');el.className='chat-msg user';el.textContent=text;
+  document.getElementById('chat-messages').appendChild(el);
+  document.getElementById('chat-messages').scrollTop=99999;
+}
+
+async function sendChat(){
+  const input=document.getElementById('chat-input');
+  const msg=input.value.trim(); if(!msg)return;
+  hideSuggestions();
+  input.value=''; appendUser(msg);
+  chatHistory.push({role:'user',content:msg});
+  const typing=document.createElement('div');
+  typing.className='chat-msg bot'; typing.id='typing-ind';
+  typing.innerHTML='<span style="animation:pulse-dot 1s infinite;display:inline-block;margin-right:3px;">●</span><span style="animation:pulse-dot 1s .2s infinite;display:inline-block;margin-right:3px;">●</span><span style="animation:pulse-dot 1s .4s infinite;display:inline-block;">●</span>';
+  document.getElementById('chat-messages').appendChild(typing);
+  document.getElementById('chat-messages').scrollTop=99999;
+  try{
+    const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:chatHistory,current_page:CURRENT_PAGE})});
+    const data=await res.json();
+    document.getElementById('typing-ind')?.remove();
+    chatHistory.push({role:'assistant',content:data.reply});
+    appendBot(data.reply);
+  }catch(e){
+    document.getElementById('typing-ind')?.remove();
+    appendBot("Oops! Something went wrong. Check your Groq API key, GUVIan! 🔧");
+  }
+}
+
+// ── DROPDOWN NAV ──────────────────────────────────────────────
+let openDropdown = null;
+
+function toggleDropdown(which) {
+  const menu = document.getElementById('menu-' + which);
+  const btn  = document.getElementById('btn-' + which);
+  if (openDropdown && openDropdown !== which) {
+    document.getElementById('menu-' + openDropdown).classList.remove('open');
+    document.getElementById('btn-'  + openDropdown).classList.remove('active');
+  }
+  const isOpen = menu.classList.contains('open');
+  menu.classList.toggle('open', !isOpen);
+  btn.classList.toggle('active', !isOpen);
+  openDropdown = isOpen ? null : which;
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.nav-dropdown')) {
+    document.querySelectorAll('.nav-dropdown-menu').forEach(m => m.classList.remove('open'));
+    document.querySelectorAll('.nav-dropdown-btn').forEach(b => b.classList.remove('active'));
+    openDropdown = null;
+  }
+});
+
+// Auto-highlight the active dropdown group based on current path
+(function() {
+  const path = window.location.pathname;
+  const creationPaths = ['/manual-features','/interaction-features','/polynomial-features','/datetime-features','/aggregated-features'];
+  const selectionPaths = ['/correlation','/chi-square','/anova','/forward-selection','/backward-elimination','/rfe','/quiz'];
+  if (creationPaths.includes(path)) {
+    document.getElementById('btn-creation').classList.add('active');
+  }
+  if (selectionPaths.includes(path)) {
+    document.getElementById('btn-selection').classList.add('active');
+  }
+})();
+</script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

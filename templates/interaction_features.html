@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+{% block title %}Interaction Features{% endblock %}
+{% block page_name %}Interaction Features{% endblock %}
+
+{% block extra_head %}
+<style>/* ── Page-specific hero background ── */
+.page-hero {
+  background: linear-gradient(145deg, 236,72,153,0.14 0%, white 60%) !important;
+  background: linear-gradient(145deg, rgba(236,72,153,0.14 0%, #fafbff 100%) !important;
+}
+/* Decorative blobs inside hero */
+.page-hero .max-w { position: relative; }
+.hero-blob-1 {
+  position:absolute;top:-80px;right:-80px;width:380px;height:380px;border-radius:50%;
+  background:radial-gradient(circle, rgba(236,72,153,0.14) 0%, transparent 65%);
+  animation:orbBlob 14s ease-in-out infinite;pointer-events:none;
+}
+.hero-blob-2 {
+  position:absolute;bottom:-60px;left:-40px;width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle, rgba(244,63,94,0.09) 0%, transparent 65%);
+  animation:orbBlob 18s ease-in-out infinite 3s;pointer-events:none;
+}
+@keyframes orbBlob{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(25px,-22px) scale(1.05)}70%{transform:translate(-18px,16px) scale(0.97)}}
+
+/* Accent colour override for this page */
+.page-hero .hero-chip { color:#EC4899!important;border-color:#EC489933!important;background:#EC489911!important; }
+h1.hero-title .accent { color:#EC4899!important; }
+.page-hero .section-label, .page-hero .stat-pill svg { color:#EC4899!important; }
+.page-hero .stat-pill { border-color:#EC489933!important;background:#EC489909!important; }
+.demo-header .demo-dot:last-of-type { background:#EC4899!important; }
+
+/* Section label override */
+.section-label {
+  background: linear-gradient(135deg,#EC4899,#F43F5E) !important;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+h2.section-title .g {
+  background: linear-gradient(135deg,#EC4899,#F43F5E,#EC4899) !important;
+  background-size:300% 100%!important;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:gradientShiftG 5s ease-in-out infinite!important;
+}
+/* Key-term badge accent */
+.key-term-badge {
+  color:#EC4899!important;background:#EC489912!important;border-color:#EC489930!important;
+}
+/* Example card top borders */
+.example-grid .example-card:nth-child(1){border-top:3px solid #EC4899!important;}
+.example-grid .example-card:nth-child(2){border-top:3px solid #F43F5E!important;}
+/* Formula box */
+.formula-box{color:#EC4899!important;background:#EC489908!important;border-color:#EC489925!important;}
+/* btn-primary */
+.btn-primary{background:linear-gradient(135deg,#EC4899,#F43F5E)!important;}
+.btn-outline{color:#EC4899!important;border-color:#EC4899!important;}
+.btn-outline:hover{background:#EC489910!important;}
+
+.feature-chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px;
+  border-radius: 10px; font-family: 'DM Mono', monospace; font-size: 0.82rem;
+  font-weight: 700; cursor: grab; user-select: none; transition: all 0.2s;
+  border: 2px solid transparent;
+}
+.feature-chip:active { cursor: grabbing; transform: scale(1.05); }
+.drop-zone {
+  min-height: 54px; border: 2px dashed var(--border); border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; padding: 8px 14px;
+  transition: all 0.2s; color: var(--text-muted); font-size: 0.82rem;
+}
+.drop-zone.over { border-color: var(--accent); background: var(--accent-light); }
+.operator-btn {
+  padding: 8px 16px; border-radius: 10px; border: 2px solid var(--border);
+  background: var(--surface2); color: var(--text); font-weight: 700; cursor: pointer;
+  font-family: 'DM Mono', monospace; font-size: 1rem; transition: all 0.2s;
+}
+.operator-btn.active { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+.result-animate { animation: resultPop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes resultPop { from{transform:scale(0.8);opacity:0;} to{transform:scale(1);opacity:1;} }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <div class="hero-blob-1"></div>
+  <div class="hero-blob-2"></div>
+  <div class="max-w">
+    <div data-aos="fade-up">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+        <a href="/" style="font-size:0.83rem;color:var(--text-muted);text-decoration:none;">Home</a>
+        <span style="color:var(--text-muted);">/</span>
+        <span style="font-size:0.83rem;font-weight:600;color:var(--accent);">Interaction Features</span>
+      </div>
+      <div class="hero-chip">📘 Module 02 · Feature Creation</div>
+      <h1 class="hero-title">Interaction <span class="accent">Features</span></h1>
+      <p class="hero-desc">Capture the combined effect of two features by multiplying, dividing, or creating ratios — revealing patterns no single feature can show alone.</p>
+    </div>
+  </div>
+</div>
+
+<div class="max-w" style="padding-top:48px;padding-bottom:80px;">
+  <div class="content-grid">
+    <div style="display:flex;flex-direction:column;gap:48px;">
+
+      <div data-aos="fade-up">
+        <div class="section-label">The Concept</div>
+        <h2 class="section-title">When Two Features Work <span class="g">Together</span></h2>
+        <p class="section-desc" style="margin-bottom:14px;">Interaction features capture the <strong style="color:var(--text);">joint effect</strong> of two or more variables. Linear models can only model additive effects — but by multiplying features, you let them model multiplicative relationships too.</p>
+        <p class="section-desc">Example: Price alone doesn't predict demand. Discount alone doesn't either. But <em>Price × Discount</em> captures the real interaction — a high discount on an expensive item drives far more sales.</p>
+      </div>
+
+      <!-- EXAMPLES -->
+      <div data-aos="fade-up">
+        <div class="section-label">Real-World Examples</div>
+        <h2 class="section-title">Interaction Features <span class="g">in Action</span></h2>
+        <div class="example-grid">
+          <div class="example-card">
+            <div class="example-tag">🏠 Real Estate</div>
+            <div class="example-title">Area × Floors Interaction</div>
+            <div class="example-desc">Property value depends on both floor area AND number of floors. Their product captures a "building mass" concept that helps predict prices better than either alone.</div>
+            <div class="formula-box" style="margin-top:10px;">area_x_floors = area_sqft × num_floors</div>
+          </div>
+          <div class="example-card">
+            <div class="example-tag">🛒 E-Commerce</div>
+            <div class="example-title">CTR × Price Interaction</div>
+            <div class="example-desc">A product with a high click-through rate but very low price suggests impulse buys. CTR × Price captures a "revenue intent" signal for recommendation models.</div>
+            <div class="formula-box" style="margin-top:10px;">revenue_intent = ctr × price</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE DEMO -->
+      <div data-aos="fade-up">
+        <div class="section-label">🎮 Interactive Demo</div>
+        <h2 class="section-title">Feature <span class="g">Interaction Builder</span></h2>
+        <p class="section-desc" style="margin-bottom:20px;">Drag a feature into each slot, choose an operator, and see the interaction feature created with sample values!</p>
+        
+        <div class="demo-card">
+          <div class="demo-header">
+            <div class="demo-dot" style="background:#ef4444;"></div>
+            <div class="demo-dot" style="background:#f59e0b;"></div>
+            <div class="demo-dot" style="background:#10b981;"></div>
+            <span style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-left:8px;">interaction_builder.py</span>
+          </div>
+          <div class="demo-body">
+            
+            <!-- Features palette -->
+            <div style="margin-bottom:20px;">
+              <div class="section-label" style="margin-bottom:10px;">Available Features (drag to slots below)</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;" id="palette">
+                {% set feats = [
+                  ('price','💰','rgba(79,70,229,0.12)','var(--accent)'),
+                  ('discount','🏷️','rgba(6,182,212,0.12)','var(--accent2)'),
+                  ('quantity','📦','rgba(16,185,129,0.12)','var(--accent3)'),
+                  ('ctr','📈','rgba(245,158,11,0.12)','#f59e0b'),
+                  ('age','👤','rgba(239,68,68,0.12)','#ef4444'),
+                  ('income','💵','rgba(168,85,247,0.12)','#a855f7'),
+                  ('rating','⭐','rgba(251,191,36,0.12)','#fbbf24'),
+                  ('visits','🔗','rgba(20,184,166,0.12)','#14b8a6')
+                ] %}
+                {% for name, icon, bg, col in feats %}
+                <div class="feature-chip" draggable="true" 
+                     data-name="{{ name }}" data-val="{{ range(10,100)|random }}"
+                     style="background:{{ bg }};color:{{ col }};border-color:{{ col }}30;"
+                     ondragstart="drag(event)">
+                  {{ icon }} {{ name }}
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Builder row -->
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px;">
+              <div style="flex:1;min-width:140px;">
+                <div class="section-label" style="margin-bottom:6px;">Feature A</div>
+                <div class="drop-zone" id="slot-a" ondrop="drop(event,'a')" ondragover="allowDrop(event)" ondragleave="removeover(event)">
+                  Drop Feature A
+                </div>
+              </div>
+              <div style="text-align:center;padding-top:22px;">
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <button class="operator-btn active" onclick="setOp('×',this)" id="op-mul">×</button>
+                  <button class="operator-btn" onclick="setOp('÷',this)" id="op-div">÷</button>
+                  <button class="operator-btn" onclick="setOp('+',this)" id="op-add">+</button>
+                  <button class="operator-btn" onclick="setOp('-',this)" id="op-sub">−</button>
+                </div>
+              </div>
+              <div style="flex:1;min-width:140px;">
+                <div class="section-label" style="margin-bottom:6px;">Feature B</div>
+                <div class="drop-zone" id="slot-b" ondrop="drop(event,'b')" ondragover="allowDrop(event)" ondragleave="removeover(event)">
+                  Drop Feature B
+                </div>
+              </div>
+              <div style="padding-top:22px;">
+                <button class="btn-primary" onclick="buildInteraction()">Build →</button>
+              </div>
+            </div>
+
+            <!-- Result -->
+            <div id="interaction-result" style="display:none; background:var(--surface2); border-radius:16px; padding:20px;">
+              <div class="section-label" style="margin-bottom:12px;">✨ New Interaction Feature Created</div>
+              <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+                <div style="background:var(--surface);border:1.5px solid var(--accent);border-radius:12px;padding:14px 20px;flex:1;min-width:200px;">
+                  <div style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:4px;">Feature Name</div>
+                  <div id="res-name" style="font-family:'Sora',sans-serif;font-weight:700;font-size:1.1rem;color:var(--accent);"></div>
+                </div>
+                <div style="background:var(--surface);border:1.5px solid var(--accent3);border-radius:12px;padding:14px 20px;flex:1;min-width:140px;">
+                  <div style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:4px;">Sample Value</div>
+                  <div id="res-val" class="result-animate" style="font-family:'Sora',sans-serif;font-weight:700;font-size:1.4rem;color:var(--accent3);"></div>
+                </div>
+                <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:14px 20px;flex:2;min-width:200px;">
+                  <div style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:4px;">Python Code</div>
+                  <div id="res-code" style="font-family:'DM Mono',monospace;font-size:0.82rem;color:var(--text);"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WHEN TO USE -->
+      <div data-aos="fade-up">
+        <div class="section-label">When to Use</div>
+        <h2 class="section-title">Choosing <span class="g">Interactions Wisely</span></h2>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          {% set tips = [
+            ('✅','Use when you suspect multiplicative effects','E.g. Price × Discount affects revenue multiplicatively'),
+            ('✅','Use with domain knowledge guiding the combination','E.g. Distance × Time = Speed in physics problems'),
+            ('⚠️','Avoid creating all possible pairs blindly','N features → N² interactions → curse of dimensionality'),
+            ('⚠️','Check for multicollinearity after adding interactions','Correlated features + their interaction = redundancy')
+          ] %}
+          {% for icon, title, desc in tips %}
+          <div style="display:flex;gap:14px;padding:14px 18px;background:var(--surface2);border-radius:12px;border:1px solid var(--border);">
+            <span style="font-size:1.1rem;margin-top:2px;">{{ icon }}</span>
+            <div>
+              <div style="font-weight:700;font-size:0.88rem;color:var(--text);margin-bottom:2px;">{{ title }}</div>
+              <div style="font-size:0.82rem;color:var(--text-muted);">{{ desc }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="key-terms-box" data-aos="fade-left">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:16px;">🔑 Key Terms</div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Interaction</div>
+          <div><div class="key-term-name">Interaction Term</div><div class="key-term-def">A feature formed by combining two features — usually by multiplication — to capture their joint effect.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Multiplicative</div>
+          <div><div class="key-term-name">Multiplicative Effect</div><div class="key-term-def">When the effect of one variable depends on the level of another — classic non-linearity.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Ratio Feature</div>
+          <div><div class="key-term-name">Ratio Feature</div><div class="key-term-def">A / B — normalizes one feature by another, e.g. sales per employee.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">PolynomialFeatures</div>
+          <div><div class="key-term-name">sklearn PolynomialFeatures</div><div class="key-term-def">Auto-generates all pairwise interactions with degree=2 and interaction_only=True.</div></div>
+        </div>
+      </div>
+      <div class="card card-pad" data-aos="fade-left" data-aos-delay="100">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.9rem;margin-bottom:10px;color:var(--text);">📐 Types of Interactions</div>
+        {% set types = [('A × B','Product — most common'),('A / B','Ratio — normalizes'),('A − B','Difference — contrast'),('A + B','Sum — pooled signal')] %}
+        {% for formula, desc in types %}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+          <span style="font-family:'DM Mono',monospace;font-size:0.82rem;color:var(--accent);font-weight:700;">{{ formula }}</span>
+          <span style="font-size:0.8rem;color:var(--text-muted);">{{ desc }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let slotA = null, slotB = null, currentOp = '×';
+
+function drag(e) { e.dataTransfer.setData('name', e.target.dataset.name); e.dataTransfer.setData('val', e.target.dataset.val); }
+function allowDrop(e) { e.preventDefault(); e.currentTarget.classList.add('over'); }
+function removeover(e) { e.currentTarget.classList.remove('over'); }
+
+function drop(e, slot) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('over');
+  const name = e.dataTransfer.getData('name');
+  const val = e.dataTransfer.getData('val');
+  if (slot === 'a') { slotA = { name, val }; updateSlot('slot-a', name, val); }
+  else { slotB = { name, val }; updateSlot('slot-b', name, val); }
+}
+
+function updateSlot(id, name, val) {
+  const el = document.getElementById(id);
+  el.innerHTML = `<div style="text-align:center;"><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;color:var(--accent);">${name}</div><div style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);">sample: ${val}</div></div>`;
+  el.style.borderStyle = 'solid'; el.style.borderColor = 'var(--accent)'; el.style.background = 'var(--accent-light)';
+}
+
+function setOp(op, btn) {
+  currentOp = op;
+  document.querySelectorAll('.operator-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function buildInteraction() {
+  if (!slotA || !slotB) { alert('Drop a feature into both slots first!'); return; }
+  const a = parseFloat(slotA.val), b = parseFloat(slotB.val);
+  let val, op_sym, py_op;
+  if (currentOp === '×') { val = a * b; py_op = '*'; }
+  else if (currentOp === '÷') { val = b !== 0 ? (a / b) : 'Inf'; py_op = '/'; }
+  else if (currentOp === '+') { val = a + b; py_op = '+'; }
+  else { val = a - b; py_op = '-'; }
+  const fname = `${slotA.name}_${py_op === '*' ? 'x' : py_op === '/' ? 'div' : py_op}_${slotB.name}`;
+  document.getElementById('res-name').textContent = fname;
+  document.getElementById('res-val').textContent = typeof val === 'number' ? val.toFixed(2) : val;
+  document.getElementById('res-code').textContent = `df['${fname}'] = df['${slotA.name}'] ${py_op} df['${slotB.name}']`;
+  const res = document.getElementById('interaction-result');
+  res.style.display = 'block';
+  res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+{% endblock %}

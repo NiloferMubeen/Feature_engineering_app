@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block title %}Date-Time Derived Features{% endblock %}
+{% block page_name %}Date-Time Derived Features{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="hero-blob-1"></div>
+  <div class="hero-blob-2"></div>
+  <div class="max-w">
+    <div data-aos="fade-up">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+        <a href="/" style="font-size:0.83rem;color:var(--text-muted);text-decoration:none;">Home</a>
+        <span style="color:var(--text-muted);">/</span>
+        <span style="font-size:0.83rem;font-weight:600;color:var(--accent);">Date-Time Features</span>
+      </div>
+      <div class="hero-chip">📘 Module 04 · Feature Creation</div>
+      <h1 class="hero-title">Date-Time Derived <span class="accent">Features</span></h1>
+      <p class="hero-desc">Timestamps hold a goldmine of signals — day of week, hour, seasonality, holidays, and time-since events. Learn to extract every bit of temporal signal.</p>
+    </div>
+  </div>
+</div>
+
+<div class="max-w" style="padding-top:48px;padding-bottom:80px;">
+  <div class="content-grid">
+    <div style="display:flex;flex-direction:column;gap:48px;">
+
+      <div data-aos="fade-up">
+        <div class="section-label">The Concept</div>
+        <h2 class="section-title">Unlocking the <span class="g">Power of Time</span></h2>
+        <p class="section-desc" style="margin-bottom:14px;">A raw timestamp like <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-family:'DM Mono',monospace;font-size:0.82rem;">2024-12-25 22:15:00</code> is nearly useless to a model. But from it, we can extract: it's Christmas (holiday), it's a Wednesday, it's 10 PM (late night), it's Q4, it's winter — all incredibly powerful signals!</p>
+        <p class="section-desc">Models can't inherently understand that Friday evenings drive more restaurant orders, or that Q4 boosts retail. You have to encode this temporal knowledge as features.</p>
+      </div>
+
+      <div data-aos="fade-up">
+        <div class="section-label">Real-World Examples</div>
+        <h2 class="section-title">Temporal Features <span class="g">in Action</span></h2>
+        <div class="example-grid">
+          <div class="example-card">
+            <div class="example-tag">🚕 Ride Hailing</div>
+            <div class="example-title">Surge Pricing Prediction</div>
+            <div class="example-desc">Uber/Ola models use hour-of-day, day-of-week, is_weekend, and is_holiday features extracted from timestamps to predict demand surges and set dynamic prices.</div>
+          </div>
+          <div class="example-card">
+            <div class="example-tag">🏦 Banking</div>
+            <div class="example-title">Fraud Detection</div>
+            <div class="example-desc">Fraud models use is_night_transaction, days_since_last_transaction, and hour_of_day — a transaction at 3 AM in a foreign country is suspicious; a timestamp alone won't tell you that.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE DEMO -->
+      <div data-aos="fade-up">
+        <div class="section-label">🎮 Interactive Demo</div>
+        <h2 class="section-title">Timestamp <span class="g">Feature Extractor</span></h2>
+        <p class="section-desc" style="margin-bottom:20px;">Enter any date and time below. Watch as we instantly extract every useful temporal feature from your timestamp!</p>
+        
+        <div class="demo-card">
+          <div class="demo-header">
+            <div class="demo-dot" style="background:#ef4444;"></div>
+            <div class="demo-dot" style="background:#f59e0b;"></div>
+            <div class="demo-dot" style="background:#10b981;"></div>
+            <span style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-left:8px;">datetime_extractor.py</span>
+          </div>
+          <div class="demo-body">
+            <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:180px;">
+                <label>Date</label>
+                <input type="date" id="dt-date" oninput="extractFeatures()"/>
+              </div>
+              <div style="flex:1;min-width:140px;">
+                <label>Time</label>
+                <input type="time" id="dt-time" oninput="extractFeatures()"/>
+              </div>
+              <button class="btn-outline" onclick="setNow()">📅 Use Now</button>
+            </div>
+            
+            <div id="dt-results" style="display:none;">
+              <!-- Grid of extracted features -->
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;" id="feature-grid"></div>
+              
+
+            </div>
+            <div id="dt-placeholder" style="text-align:center;padding:40px;color:var(--text-muted);">
+              <div style="font-size:2.5rem;margin-bottom:12px;">⏰</div>
+              <div>Select a date and time to extract features</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div data-aos="fade-up">
+        <div class="section-label">Python Code</div>
+        <h2 class="section-title">Complete <span class="g">Implementation</span></h2>
+        <div class="code-block">
+<span class="kw">import</span> pandas <span class="kw">as</span> pd<br/><br/>
+df[<span class="str">'hour'</span>]         = df[<span class="str">'timestamp'</span>].dt.hour<br/>
+df[<span class="str">'day_of_week'</span>]  = df[<span class="str">'timestamp'</span>].dt.dayofweek  <span class="cm"># 0=Mon</span><br/>
+df[<span class="str">'day_of_month'</span>] = df[<span class="str">'timestamp'</span>].dt.day<br/>
+df[<span class="str">'month'</span>]        = df[<span class="str">'timestamp'</span>].dt.month<br/>
+df[<span class="str">'quarter'</span>]      = df[<span class="str">'timestamp'</span>].dt.quarter<br/>
+df[<span class="str">'year'</span>]         = df[<span class="str">'timestamp'</span>].dt.year<br/>
+df[<span class="str">'is_weekend'</span>]   = df[<span class="str">'day_of_week'</span>].isin([<span class="num">5</span>,<span class="num">6</span>]).astype(int)<br/>
+df[<span class="str">'is_night'</span>]     = (df[<span class="str">'hour'</span>] &lt; <span class="num">6</span>).astype(int)<br/>
+df[<span class="str">'week_of_year'</span>] = df[<span class="str">'timestamp'</span>].dt.isocalendar().week<br/>
+df[<span class="str">'days_since'</span>]   = (df[<span class="str">'timestamp'</span>] - reference_date).dt.days
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="key-terms-box" data-aos="fade-left">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:16px;">🔑 Key Terms</div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Timestamp</div>
+          <div><div class="key-term-name">Timestamp</div><div class="key-term-def">A specific point in time, typically stored as datetime or Unix epoch seconds.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Cyclical Enc.</div>
+          <div><div class="key-term-name">Cyclical Encoding</div><div class="key-term-def">Encoding cyclic features (hour, month) as sin/cos pairs so hour 23 is close to hour 0.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Seasonality</div>
+          <div><div class="key-term-name">Seasonality</div><div class="key-term-def">Regular patterns that repeat over time — daily, weekly, or yearly cycles in data.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Lag Feature</div>
+          <div><div class="key-term-name">Lag Feature</div><div class="key-term-def">The value of a feature N time steps in the past — crucial for time-series forecasting.</div></div>
+        </div>
+      </div>
+      <div class="card card-pad" data-aos="fade-left" data-aos-delay="100">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.9rem;margin-bottom:10px;color:var(--text);">🔄 Cyclical Encoding Tip</div>
+        <p class="section-desc" style="margin-bottom:10px;">Hours 0 and 23 are adjacent in time but far apart numerically. Use sin/cos encoding:</p>
+        <div class="formula-box">hour_sin = sin(2π × hour / 24)<br/>hour_cos = cos(2π × hour / 24)</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function setNow() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('dt-date').value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  document.getElementById('dt-time').value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  extractFeatures();
+}
+
+function extractFeatures() {
+  const dateVal = document.getElementById('dt-date').value;
+  const timeVal = document.getElementById('dt-time').value || '00:00';
+  if (!dateVal) return;
+  const dt = new Date(`${dateVal}T${timeVal}:00`);
+  const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const hour = dt.getHours(), dow = (dt.getDay()+6)%7;
+  
+  const features = [
+    { name: 'hour', val: hour, desc: 'Hour of day (0-23)', icon: '⏰', color: 'var(--accent)' },
+    { name: 'day_of_week', val: dow, desc: days[dow], icon: '📅', color: 'var(--accent2)' },
+    { name: 'day_of_month', val: dt.getDate(), desc: `Day ${dt.getDate()} of month`, icon: '🗓️', color: 'var(--accent3)' },
+    { name: 'month', val: dt.getMonth()+1, desc: months[dt.getMonth()], icon: '📆', color: '#f59e0b' },
+    { name: 'quarter', val: Math.ceil((dt.getMonth()+1)/3), desc: `Q${Math.ceil((dt.getMonth()+1)/3)}`, icon: '📊', color: '#a855f7' },
+    { name: 'year', val: dt.getFullYear(), desc: 'Calendar year', icon: '🗒️', color: '#ef4444' },
+    { name: 'is_weekend', val: dow >= 5 ? 1 : 0, desc: dow >= 5 ? '✅ Yes' : '❌ No', icon: '🎉', color: dow>=5?'var(--accent3)':'#ef4444' },
+    { name: 'is_night', val: (hour < 6 || hour > 22) ? 1 : 0, desc: (hour < 6 || hour > 22) ? '✅ Night' : '☀️ Day', icon: '🌙', color: (hour<6||hour>22)?'#a855f7':'#f59e0b' },
+    { name: 'is_morning_rush', val: (hour >= 7 && hour <= 9) ? 1 : 0, desc: (hour >= 7 && hour <= 9) ? '✅ Rush hour' : '❌ No', icon: '🚗', color: (hour>=7&&hour<=9)?'#ef4444':'var(--text-muted)' },
+    { name: 'week_of_year', val: Math.ceil((dt - new Date(dt.getFullYear(),0,1))/604800000), desc: 'Week number', icon: '📋', color: 'var(--accent)' },
+    { name: 'hour_sin', val: Math.sin(2*Math.PI*hour/24).toFixed(3), desc: 'Cyclical hour (sin)', icon: '〰️', color: 'var(--accent2)' },
+    { name: 'hour_cos', val: Math.cos(2*Math.PI*hour/24).toFixed(3), desc: 'Cyclical hour (cos)', icon: '〰️', color: 'var(--accent2)' },
+  ];
+
+  const grid = document.getElementById('feature-grid');
+  grid.innerHTML = features.map(f => `
+    <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;padding:12px;border-top:3px solid ${f.color};">
+      <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">${f.icon} ${f.name}</div>
+      <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.2rem;color:${f.color};">${f.val}</div>
+      <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;">${f.desc}</div>
+    </div>
+  `).join('');
+
+
+  document.getElementById('dt-results').style.display = 'block';
+  document.getElementById('dt-placeholder').style.display = 'none';
+}
+
+setNow();
+</script>
+{% endblock %}

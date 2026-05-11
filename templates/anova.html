@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% block title %}ANOVA — Feature Selection{% endblock %}
+{% block page_name %}ANOVA{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="hero-blob-1"></div>
+  <div class="hero-blob-2"></div>
+  <div class="max-w">
+    <div data-aos="fade-up">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+        <a href="/" style="font-size:0.83rem;color:var(--text-muted);text-decoration:none;">Home</a>
+        <span style="color:var(--text-muted);">/</span>
+        <span style="font-size:0.83rem;font-weight:600;color:var(--accent2);">Feature Selection</span>
+      </div>
+      <div class="hero-chip" style="background:rgba(6,182,212,0.1);color:var(--accent2);">🎯 Module 08 · Feature Selection</div>
+      <h1 class="hero-title">ANOVA <span style="color:var(--accent2);">F-Test</span></h1>
+      <p class="hero-desc">Analysis of Variance compares means across multiple groups to determine if a continuous feature varies significantly with a categorical target.</p>
+    </div>
+  </div>
+</div>
+
+<div class="max-w" style="padding-top:48px;padding-bottom:80px;">
+  <div class="content-grid">
+    <div style="display:flex;flex-direction:column;gap:48px;">
+
+      <div data-aos="fade-up">
+        <div class="section-label">The Concept</div>
+        <h2 class="section-title">Variance <span class="g">Between Groups</span></h2>
+        <p class="section-desc" style="margin-bottom:14px;">ANOVA asks: does the <em>mean value of this feature differ significantly across target classes</em>? If yes, the feature is informative. The <strong style="color:var(--text);">F-statistic</strong> is the ratio of between-group variance to within-group variance.</p>
+        <p class="section-desc" style="margin-bottom:14px;">High F-score = group means are far apart relative to spread within groups = feature discriminates between classes well.</p>
+        <div class="formula-box">F = Between-Group Variance / Within-Group Variance<br/>= (SS_between / df_between) / (SS_within / df_within)</div>
+      </div>
+
+      <div data-aos="fade-up">
+        <div class="section-label">Real-World Examples</div>
+        <h2 class="section-title">ANOVA <span class="g">in Action</span></h2>
+        <div class="example-grid">
+          <div class="example-card">
+            <div class="example-tag">🌸 Iris Dataset</div>
+            <div class="example-title">Petal Length vs Species</div>
+            <div class="example-desc">Setosa has very short petals (mean 1.5cm), while Virginica has long petals (mean 5.6cm). ANOVA F-score for petal_length is ~1180 — one of the most discriminative features possible!</div>
+          </div>
+          <div class="example-card">
+            <div class="example-tag">💰 Salary Prediction</div>
+            <div class="example-title">Experience vs Job Level</div>
+            <div class="example-desc">Years of experience differs significantly across Junior/Mid/Senior/Lead levels. ANOVA reveals this, confirming that years_of_experience is a high-value feature for predicting job level.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE DEMO -->
+      <div data-aos="fade-up">
+        <div class="section-label">🎮 Interactive Demo</div>
+        <h2 class="section-title">Group Means <span class="g">Visualizer</span></h2>
+        <p class="section-desc" style="margin-bottom:20px;">Drag the sliders to change each group's mean. Watch the F-statistic update as groups separate or overlap — see exactly when a feature becomes significant!</p>
+        
+        <div class="demo-card">
+          <div class="demo-header">
+            <div class="demo-dot" style="background:#ef4444;"></div>
+            <div class="demo-dot" style="background:#f59e0b;"></div>
+            <div class="demo-dot" style="background:#10b981;"></div>
+            <span style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-left:8px;">anova_demo.py</span>
+          </div>
+          <div class="demo-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;" id="sliders-area"></div>
+            <canvas id="anova-canvas" width="620" height="280" style="width:100%;border-radius:12px;background:var(--surface2);display:block;"></canvas>
+            <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;">
+              <div style="flex:1;background:var(--surface2);border-radius:14px;padding:16px;text-align:center;">
+                <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;margin-bottom:4px;">F-Statistic</div>
+                <div id="f-stat" style="font-family:'Sora',sans-serif;font-weight:800;font-size:2rem;color:var(--accent);">—</div>
+              </div>
+              <div style="flex:1;background:var(--surface2);border-radius:14px;padding:16px;text-align:center;">
+                <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;margin-bottom:4px;">p-value</div>
+                <div id="f-pval" style="font-family:'Sora',sans-serif;font-weight:800;font-size:2rem;color:var(--accent2);">—</div>
+              </div>
+              <div style="flex:2;background:var(--surface2);border-radius:14px;padding:16px;text-align:center;">
+                <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;margin-bottom:4px;">Conclusion</div>
+                <div id="f-conclusion" style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.9rem;color:var(--text);line-height:1.5;">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div data-aos="fade-up">
+        <div class="section-label">Python Code</div>
+        <h2 class="section-title">sklearn <span class="g">Implementation</span></h2>
+        <div class="code-block">
+<span class="kw">from</span> sklearn.feature_selection <span class="kw">import</span> f_classif, SelectKBest<br/><br/>
+<span class="cm"># ANOVA F-test for classification</span><br/>
+selector = SelectKBest(<span class="fn">f_classif</span>, k=<span class="num">5</span>)<br/>
+X_new = selector.<span class="fn">fit_transform</span>(X, y)<br/><br/>
+<span class="cm"># Get F-scores and p-values</span><br/>
+f_scores, p_values = <span class="fn">f_classif</span>(X, y)<br/>
+feature_importance = pd.<span class="fn">Series</span>(f_scores, index=feature_names)<br/>
+feature_importance.<span class="fn">sort_values</span>(ascending=<span class="kw">False</span>).<span class="fn">plot</span>(kind=<span class="str">'bar'</span>)
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="key-terms-box" data-aos="fade-left">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:16px;">🔑 Key Terms</div>
+        <div class="key-term-item">
+          <div class="key-term-badge">F-Statistic</div>
+          <div><div class="key-term-name">F-Statistic</div><div class="key-term-def">Ratio of between-group to within-group variance. High F = groups differ a lot = feature is useful.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">SS_between</div>
+          <div><div class="key-term-name">Between-Group SS</div><div class="key-term-def">Sum of squared deviations of group means from the overall mean — captures class separation.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">SS_within</div>
+          <div><div class="key-term-name">Within-Group SS</div><div class="key-term-def">Sum of squared deviations within each group — captures internal noise/spread.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">f_classif</div>
+          <div><div class="key-term-name">f_classif (sklearn)</div><div class="key-term-def">Computes ANOVA F-value for each feature vs a classification target.</div></div>
+        </div>
+      </div>
+      <div class="card card-pad" data-aos="fade-left" data-aos-delay="100">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.9rem;margin-bottom:10px;color:var(--text);">📊 ANOVA vs Correlation</div>
+        <p class="section-desc">Use <strong style="color:var(--text);">Correlation</strong> when both feature and target are continuous.<br/><br/>Use <strong style="color:var(--text);">ANOVA</strong> when the feature is continuous but the target is categorical (classification tasks).</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const groups = [
+  { label: 'Class A', mean: 30, std: 8, color: '#4F46E5', n: 30 },
+  { label: 'Class B', mean: 55, std: 8, color: '#06b6d4', n: 30 },
+  { label: 'Class C', mean: 75, std: 8, color: '#10b981', n: 30 }
+];
+
+function buildSliders() {
+  document.getElementById('sliders-area').innerHTML = groups.map((g,i) => `
+    <div style="background:var(--surface2);border-radius:14px;padding:16px;border-top:3px solid ${g.color};">
+      <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.88rem;color:${g.color};margin-bottom:10px;">${g.label}</div>
+      <div style="margin-bottom:10px;">
+        <label>Mean: <strong id="mean-label-${i}" style="color:${g.color};">${g.mean}</strong></label>
+        <input type="range" min="10" max="90" value="${g.mean}" oninput="groups[${i}].mean=parseInt(this.value);document.getElementById('mean-label-${i}').textContent=this.value;drawAnova();" style="width:100%;margin-top:6px;"/>
+      </div>
+      <div>
+        <label>Spread: <strong id="std-label-${i}" style="color:${g.color};">${g.std}</strong></label>
+        <input type="range" min="2" max="25" value="${g.std}" oninput="groups[${i}].std=parseInt(this.value);document.getElementById('std-label-${i}').textContent=this.value;drawAnova();" style="width:100%;margin-top:6px;"/>
+      </div>
+    </div>
+  `).join('');
+}
+
+function normalPDF(x, mu, sigma) {
+  return Math.exp(-0.5*((x-mu)/sigma)**2)/(sigma*Math.sqrt(2*Math.PI));
+}
+
+function drawAnova() {
+  const canvas = document.getElementById('anova-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const isDark = document.documentElement.classList.contains('dark');
+  const PAD = {l:30,r:20,t:20,b:30};
+  const xMin=0,xMax=100;
+  const toX = v => PAD.l+(v-xMin)/(xMax-xMin)*(W-PAD.l-PAD.r);
+
+  // Compute grand mean and F
+  const grandMean = groups.reduce((s,g)=>s+g.mean,0)/groups.length;
+  const SS_between = groups.reduce((s,g)=>s+g.n*(g.mean-grandMean)**2,0);
+  const df_between = groups.length-1;
+  const SS_within = groups.reduce((s,g)=>s+(g.n-1)*g.std**2,0);
+  const df_within = groups.reduce((s,g)=>s+g.n-1,0);
+  const F = (SS_between/df_between)/(SS_within/df_within);
+  const p = Math.exp(-F*0.4); // rough approx
+
+  // Find max density for scaling
+  let maxDen=0;
+  for(let x=0;x<=100;x+=0.5){groups.forEach(g=>{const d=normalPDF(x,g.mean,g.std);if(d>maxDen)maxDen=d;});}
+
+  // Draw distributions
+  groups.forEach(g=>{
+    ctx.beginPath();
+    ctx.fillStyle=g.color+'30';
+    ctx.moveTo(toX(0),H-PAD.b);
+    for(let x=0;x<=100;x+=0.5){
+      const d=normalPDF(x,g.mean,g.std);
+      const y=H-PAD.b-(d/maxDen)*(H-PAD.t-PAD.b)*0.85;
+      ctx.lineTo(toX(x),y);
+    }
+    ctx.lineTo(toX(100),H-PAD.b);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.strokeStyle=g.color;ctx.lineWidth=2.5;
+    for(let x=0;x<=100;x+=0.5){
+      const d=normalPDF(x,g.mean,g.std);
+      const y=H-PAD.b-(d/maxDen)*(H-PAD.t-PAD.b)*0.85;
+      if(x===0)ctx.moveTo(toX(x),y);else ctx.lineTo(toX(x),y);
+    }
+    ctx.stroke();
+    // Mean line
+    ctx.beginPath();ctx.strokeStyle=g.color+'80';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+    ctx.moveTo(toX(g.mean),H-PAD.b);ctx.lineTo(toX(g.mean),PAD.t);ctx.stroke();ctx.setLineDash([]);
+    // Label
+    ctx.fillStyle=g.color;ctx.font='bold 12px Sora,sans-serif';ctx.textAlign='center';
+    ctx.fillText(g.label,toX(g.mean),PAD.t+10);
+  });
+
+  // Axis
+  ctx.strokeStyle=isDark?'rgba(255,255,255,0.15)':'rgba(0,0,0,0.15)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(PAD.l,H-PAD.b);ctx.lineTo(W-PAD.r,H-PAD.b);ctx.stroke();
+
+  // Update stats
+  document.getElementById('f-stat').textContent=F.toFixed(2);
+  document.getElementById('f-stat').style.color=F>4?'#10b981':F>2?'#f59e0b':'#ef4444';
+  document.getElementById('f-pval').textContent=p.toFixed(3);
+  document.getElementById('f-pval').style.color=p<0.05?'#10b981':'#ef4444';
+  const sig=p<0.05;
+  document.getElementById('f-conclusion').textContent=sig
+    ?`✅ F=${F.toFixed(1)} is significant (p<0.05). Groups differ — this feature is informative! Keep it.`
+    :`⚠️ F=${F.toFixed(1)} is not significant (p≥0.05). Groups overlap too much — feature may not help.`;
+  document.getElementById('f-conclusion').style.color=sig?'#065f46':'#7f1d1d';
+}
+
+buildSliders();
+drawAnova();
+</script>
+{% endblock %}

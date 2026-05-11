@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+{% block title %}Manual Feature Creation{% endblock %}
+{% block page_name %}Manual Feature Creation{% endblock %}
+
+{% block extra_head %}
+<style>/* ── Page-specific hero background ── */
+.page-hero {
+  background: linear-gradient(145deg, 79,70,229,0.14 0%, white 60%) !important;
+  background: linear-gradient(145deg, rgba(79,70,229,0.14 0%, #fafbff 100%) !important;
+}
+/* Decorative blobs inside hero */
+.page-hero .max-w { position: relative; }
+.hero-blob-1 {
+  position:absolute;top:-80px;right:-80px;width:380px;height:380px;border-radius:50%;
+  background:radial-gradient(circle, rgba(79,70,229,0.14) 0%, transparent 65%);
+  animation:orbBlob 14s ease-in-out infinite;pointer-events:none;
+}
+.hero-blob-2 {
+  position:absolute;bottom:-60px;left:-40px;width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle, rgba(124,58,237,0.10) 0%, transparent 65%);
+  animation:orbBlob 18s ease-in-out infinite 3s;pointer-events:none;
+}
+@keyframes orbBlob{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(25px,-22px) scale(1.05)}70%{transform:translate(-18px,16px) scale(0.97)}}
+
+/* Accent colour override for this page */
+.page-hero .hero-chip { color:#4F46E5!important;border-color:#4F46E533!important;background:#4F46E511!important; }
+h1.hero-title .accent { color:#4F46E5!important; }
+.page-hero .section-label, .page-hero .stat-pill svg { color:#4F46E5!important; }
+.page-hero .stat-pill { border-color:#4F46E533!important;background:#4F46E509!important; }
+.demo-header .demo-dot:last-of-type { background:#4F46E5!important; }
+
+/* Section label override */
+.section-label {
+  background: linear-gradient(135deg,#4F46E5,#7C3AED) !important;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+h2.section-title .g {
+  background: linear-gradient(135deg,#4F46E5,#7C3AED,#4F46E5) !important;
+  background-size:300% 100%!important;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:gradientShiftG 5s ease-in-out infinite!important;
+}
+/* Key-term badge accent */
+.key-term-badge {
+  color:#4F46E5!important;background:#4F46E512!important;border-color:#4F46E530!important;
+}
+/* Example card top borders */
+.example-grid .example-card:nth-child(1){border-top:3px solid #4F46E5!important;}
+.example-grid .example-card:nth-child(2){border-top:3px solid #7C3AED!important;}
+/* Formula box */
+.formula-box{color:#4F46E5!important;background:#4F46E508!important;border-color:#4F46E525!important;}
+/* btn-primary */
+.btn-primary{background:linear-gradient(135deg,#4F46E5,#7C3AED)!important;}
+.btn-outline{color:#4F46E5!important;border-color:#4F46E5!important;}
+.btn-outline:hover{background:#4F46E510!important;}
+
+.formula-box {
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 14px 18px; font-family: 'DM Mono', monospace;
+  font-size: 0.85rem; color: var(--accent); margin: 10px 0;
+}
+.result-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; border-radius: 10px; background: var(--surface2);
+  border: 1px solid var(--border); margin: 6px 0;
+}
+.result-label { font-size: 0.82rem; color: var(--text-muted); font-weight:600; }
+.result-val { font-family: 'DM Mono', monospace; font-size: 0.9rem; font-weight: 700; color: var(--accent); }
+.new-badge { font-size:0.65rem; background:var(--accent); color:white; padding:2px 7px; border-radius:4px; margin-left:6px; vertical-align:middle; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="hero-blob-1"></div>
+  <div class="hero-blob-2"></div>
+  <div class="max-w">
+    <div data-aos="fade-up">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+        <a href="/" style="font-size:0.83rem;color:var(--text-muted);text-decoration:none;">Home</a>
+        <span style="color:var(--text-muted);">/</span>
+        <span style="font-size:0.83rem;font-weight:600;color:var(--accent);">Feature Creation</span>
+      </div>
+      <div class="hero-chip">📘 Module 01 · Feature Creation</div>
+      <h1 class="hero-title">Manual Feature <span class="accent">Creation</span></h1>
+      <p class="hero-desc">Use domain knowledge to craft features that machines can't discover on their own — turning raw numbers into meaningful signals.</p>
+      <div style="display:flex;gap:20px;margin-top:20px;flex-wrap:wrap;">
+        <div class="stat-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>~8 min</div>
+        <div class="stat-pill">🎮 Interactive Calculator</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w" style="padding-top:48px; padding-bottom:80px;">
+  <div class="content-grid">
+    
+    <!-- MAIN -->
+    <div style="display:flex;flex-direction:column;gap:48px;">
+
+      <!-- CONCEPT -->
+      <div data-aos="fade-up">
+        <div class="section-label">The Concept</div>
+        <h2 class="section-title">What is Manual Feature <span class="g">Creation?</span></h2>
+        <p class="section-desc" style="margin-bottom:14px;">Manual feature creation is the practice of using <strong style="color:var(--text);">domain expertise</strong> to engineer new features from existing data. Instead of relying on the model to figure everything out, you give it pre-processed, meaningful signals.</p>
+        <p class="section-desc" style="margin-bottom:14px;">Think of it like a chef seasoning food — the raw ingredients exist, but a skilled chef transforms them into something far more impactful.</p>
+        
+        <div class="formula-box">
+          # Raw data → Engineered feature<br/>
+          weight_kg, height_m → BMI = weight / height²<br/>
+          revenue, cost → profit_margin = (revenue - cost) / revenue
+        </div>
+      </div>
+
+      <!-- EXAMPLES -->
+      <div data-aos="fade-up">
+        <div class="section-label">Real-World Examples</div>
+        <h2 class="section-title">Manual Features <span class="g">in Action</span></h2>
+        <div class="example-grid">
+          <div class="example-card">
+            <div class="example-tag">🏥 Healthcare</div>
+            <div class="example-title">BMI (Body Mass Index)</div>
+            <div class="example-desc">From height and weight, doctors manually compute BMI to classify obesity risk — a feature no algorithm would discover on its own without this medical formula.</div>
+            <div class="formula-box" style="margin-top:12px;">BMI = weight(kg) / height(m)²</div>
+          </div>
+          <div class="example-card">
+            <div class="example-tag">📊 Finance</div>
+            <div class="example-title">Debt-to-Income Ratio</div>
+            <div class="example-desc">Banks use total monthly debt divided by gross monthly income to assess loan risk — a hand-crafted ratio that captures affordability better than either raw number.</div>
+            <div class="formula-box" style="margin-top:12px;">DTI = total_debt / gross_income</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEMO -->
+      <div data-aos="fade-up">
+        <div class="section-label">🎮 Interactive Demo</div>
+        <h2 class="section-title">Feature <span class="g">Calculator</span></h2>
+        <p class="section-desc" style="margin-bottom:20px;">Enter raw values below. Watch how manual engineering transforms them into powerful, model-ready features instantly!</p>
+        
+        <div class="demo-card">
+          <div class="demo-header">
+            <div class="demo-dot" style="background:#ef4444;"></div>
+            <div class="demo-dot" style="background:#f59e0b;"></div>
+            <div class="demo-dot" style="background:#10b981;"></div>
+            <span style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-left:8px;">feature_engineer.py</span>
+            <div style="margin-left:auto;">
+              <select id="demo-mode" onchange="switchMode()" style="font-size:0.78rem;padding:4px 10px;width:auto;">
+                <option value="health">🏥 Health</option>
+                <option value="finance">💰 Finance</option>
+                <option value="ecommerce">🛒 E-Commerce</option>
+              </select>
+            </div>
+          </div>
+          <div class="demo-body">
+            <!-- Health Mode -->
+            <div id="mode-health">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+                <div><label>Weight (kg)</label><input type="number" id="h-weight" value="70" oninput="calcHealth()"/></div>
+                <div><label>Height (m)</label><input type="number" id="h-height" value="1.75" step="0.01" oninput="calcHealth()"/></div>
+                <div><label>Age (years)</label><input type="number" id="h-age" value="35" oninput="calcHealth()"/></div>
+                <div><label>Resting HR (bpm)</label><input type="number" id="h-hr" value="72" oninput="calcHealth()"/></div>
+              </div>
+              <div style="background:var(--surface2);border-radius:14px;padding:18px;">
+                <div style="font-size:0.78rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin-bottom:12px;">✨ Engineered Features</div>
+                <div class="result-row"><span class="result-label">BMI <span class="new-badge">NEW</span></span><span class="result-val" id="r-bmi">—</span></div>
+                <div class="result-row"><span class="result-label">BMI Category <span class="new-badge">NEW</span></span><span class="result-val" id="r-bmi-cat">—</span></div>
+                <div class="result-row"><span class="result-label">Max Heart Rate <span class="new-badge">NEW</span></span><span class="result-val" id="r-maxhr">—</span></div>
+                <div class="result-row"><span class="result-label">HR Reserve <span class="new-badge">NEW</span></span><span class="result-val" id="r-hrr">—</span></div>
+                <div class="result-row"><span class="result-label">Waist Est. (cm) <span class="new-badge">NEW</span></span><span class="result-val" id="r-waist">—</span></div>
+              </div>
+            </div>
+            <!-- Finance Mode -->
+            <div id="mode-finance" style="display:none;">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+                <div><label>Revenue (₹)</label><input type="number" id="f-rev" value="100000" oninput="calcFinance()"/></div>
+                <div><label>Cost (₹)</label><input type="number" id="f-cost" value="65000" oninput="calcFinance()"/></div>
+                <div><label>Total Debt (₹)</label><input type="number" id="f-debt" value="20000" oninput="calcFinance()"/></div>
+                <div><label>Transactions</label><input type="number" id="f-txn" value="450" oninput="calcFinance()"/></div>
+              </div>
+              <div style="background:var(--surface2);border-radius:14px;padding:18px;">
+                <div style="font-size:0.78rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin-bottom:12px;">✨ Engineered Features</div>
+                <div class="result-row"><span class="result-label">Profit Margin % <span class="new-badge">NEW</span></span><span class="result-val" id="r-margin">—</span></div>
+                <div class="result-row"><span class="result-label">Gross Profit <span class="new-badge">NEW</span></span><span class="result-val" id="r-profit">—</span></div>
+                <div class="result-row"><span class="result-label">Debt-to-Revenue <span class="new-badge">NEW</span></span><span class="result-val" id="r-dtr">—</span></div>
+                <div class="result-row"><span class="result-label">Avg Transaction Value <span class="new-badge">NEW</span></span><span class="result-val" id="r-atv">—</span></div>
+              </div>
+            </div>
+            <!-- E-Commerce Mode -->
+            <div id="mode-ecommerce" style="display:none;">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+                <div><label>Page Views</label><input type="number" id="e-views" value="1200" oninput="calcEcom()"/></div>
+                <div><label>Purchases</label><input type="number" id="e-purchases" value="36" oninput="calcEcom()"/></div>
+                <div><label>Cart Adds</label><input type="number" id="e-cart" value="120" oninput="calcEcom()"/></div>
+                <div><label>Avg Order Value (₹)</label><input type="number" id="e-aov" value="850" oninput="calcEcom()"/></div>
+              </div>
+              <div style="background:var(--surface2);border-radius:14px;padding:18px;">
+                <div style="font-size:0.78rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin-bottom:12px;">✨ Engineered Features</div>
+                <div class="result-row"><span class="result-label">Conversion Rate % <span class="new-badge">NEW</span></span><span class="result-val" id="r-cvr">—</span></div>
+                <div class="result-row"><span class="result-label">Cart-to-Purchase % <span class="new-badge">NEW</span></span><span class="result-val" id="r-ctp">—</span></div>
+                <div class="result-row"><span class="result-label">Revenue Potential <span class="new-badge">NEW</span></span><span class="result-val" id="r-revpot">—</span></div>
+                <div class="result-row"><span class="result-label">Bounce Proxy <span class="new-badge">NEW</span></span><span class="result-val" id="r-bounce">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HOW TO DO IT -->
+      <div data-aos="fade-up">
+        <div class="section-label">Python Code</div>
+        <h2 class="section-title">Implementing in <span class="g">Pandas</span></h2>
+        <div class="code-block">
+<span class="kw">import</span> pandas <span class="kw">as</span> pd<br/><br/>
+df = pd.<span class="fn">DataFrame</span>({<br/>
+&nbsp;&nbsp;<span class="str">'weight'</span>: [<span class="num">70</span>, <span class="num">85</span>, <span class="num">60</span>],<br/>
+&nbsp;&nbsp;<span class="str">'height'</span>: [<span class="num">1.75</span>, <span class="num">1.80</span>, <span class="num">1.62</span>]<br/>
+})<br/><br/>
+<span class="cm"># Manual feature creation</span><br/>
+df[<span class="str">'bmi'</span>] = df[<span class="str">'weight'</span>] / (df[<span class="str">'height'</span>] ** <span class="num">2</span>)<br/>
+df[<span class="str">'bmi_category'</span>] = pd.<span class="fn">cut</span>(df[<span class="str">'bmi'</span>],<br/>
+&nbsp;&nbsp;bins=[<span class="num">0</span>, <span class="num">18.5</span>, <span class="num">25</span>, <span class="num">30</span>, <span class="num">100</span>],<br/>
+&nbsp;&nbsp;labels=[<span class="str">'Underweight'</span>, <span class="str">'Normal'</span>, <span class="str">'Overweight'</span>, <span class="str">'Obese'</span>])
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      
+      <!-- KEY TERMS -->
+      <div class="key-terms-box" data-aos="fade-left">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:16px;">🔑 Key Terms</div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Domain Knowledge</div>
+          <div><div class="key-term-name">Domain Knowledge</div><div class="key-term-def">Expert understanding of a specific field used to design meaningful features.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Feature</div>
+          <div><div class="key-term-name">Feature</div><div class="key-term-def">An individual measurable property or characteristic used as input to a model.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Derived Feature</div>
+          <div><div class="key-term-name">Derived Feature</div><div class="key-term-def">A new feature computed from one or more existing features using a formula.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Feature Space</div>
+          <div><div class="key-term-name">Feature Space</div><div class="key-term-def">The multidimensional space defined by all features in the dataset.</div></div>
+        </div>
+      </div>
+
+      <!-- WHY IT MATTERS -->
+      <div class="card card-pad" data-aos="fade-left" data-aos-delay="100">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:12px;">💡 Why It Matters</div>
+        <p class="section-desc">Manual features encode knowledge that takes <strong style="color:var(--text);">years of experience</strong> to acquire. They can reduce model complexity, improve interpretability, and often outperform automated feature discovery.</p>
+      </div>
+
+      <!-- PRO TIP -->
+      <div style="background:linear-gradient(135deg,rgba(79,70,229,0.1),rgba(6,182,212,0.08)); border:1.5px solid rgba(79,70,229,0.2); border-radius:18px; padding:20px;" data-aos="fade-left" data-aos-delay="200">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.9rem;color:var(--accent);margin-bottom:8px;">⚡ Pro Tip</div>
+        <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.65;">Always validate your manually created features using correlation or feature importance scores. A feature that <em>seems</em> meaningful might not help the model!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function switchMode() {
+  const mode = document.getElementById('demo-mode').value;
+  ['health','finance','ecommerce'].forEach(m => {
+    document.getElementById('mode-'+m).style.display = m === mode ? 'block' : 'none';
+  });
+  if (mode === 'health') calcHealth();
+  if (mode === 'finance') calcFinance();
+  if (mode === 'ecommerce') calcEcom();
+}
+
+function calcHealth() {
+  const w = parseFloat(document.getElementById('h-weight').value) || 0;
+  const h = parseFloat(document.getElementById('h-height').value) || 1;
+  const age = parseFloat(document.getElementById('h-age').value) || 0;
+  const hr = parseFloat(document.getElementById('h-hr').value) || 0;
+  const bmi = w / (h * h);
+  const cats = [[18.5,'Underweight'],[25,'Normal'],[30,'Overweight'],[999,'Obese']];
+  const cat = cats.find(c => bmi < c[0])?.[1] || 'Obese';
+  const maxhr = 220 - age;
+  const hrr = maxhr - hr;
+  const waist = (w * 0.6 + h * 30).toFixed(1);
+  document.getElementById('r-bmi').textContent = bmi.toFixed(2);
+  document.getElementById('r-bmi-cat').textContent = cat;
+  document.getElementById('r-maxhr').textContent = maxhr + ' bpm';
+  document.getElementById('r-hrr').textContent = hrr + ' bpm';
+  document.getElementById('r-waist').textContent = waist + ' cm';
+}
+
+function calcFinance() {
+  const rev = parseFloat(document.getElementById('f-rev').value) || 1;
+  const cost = parseFloat(document.getElementById('f-cost').value) || 0;
+  const debt = parseFloat(document.getElementById('f-debt').value) || 0;
+  const txn = parseFloat(document.getElementById('f-txn').value) || 1;
+  document.getElementById('r-margin').textContent = (((rev-cost)/rev)*100).toFixed(1) + '%';
+  document.getElementById('r-profit').textContent = '₹' + (rev-cost).toLocaleString();
+  document.getElementById('r-dtr').textContent = (debt/rev).toFixed(3);
+  document.getElementById('r-atv').textContent = '₹' + (rev/txn).toFixed(0);
+}
+
+function calcEcom() {
+  const views = parseFloat(document.getElementById('e-views').value) || 1;
+  const purchases = parseFloat(document.getElementById('e-purchases').value) || 0;
+  const cart = parseFloat(document.getElementById('e-cart').value) || 1;
+  const aov = parseFloat(document.getElementById('e-aov').value) || 0;
+  document.getElementById('r-cvr').textContent = ((purchases/views)*100).toFixed(2) + '%';
+  document.getElementById('r-ctp').textContent = ((purchases/cart)*100).toFixed(1) + '%';
+  document.getElementById('r-revpot').textContent = '₹' + (cart * aov).toLocaleString();
+  document.getElementById('r-bounce').textContent = ((1 - cart/views)*100).toFixed(1) + '%';
+}
+
+// Init
+calcHealth();
+</script>
+{% endblock %}

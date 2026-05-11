@@ -1,0 +1,378 @@
+{% extends "base.html" %}
+{% block title %}Correlation — Feature Selection{% endblock %}
+{% block page_name %}Correlation{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="hero-blob-1"></div>
+  <div class="hero-blob-2"></div>
+  <div class="max-w">
+    <div data-aos="fade-up">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+        <a href="/" style="font-size:0.83rem;color:var(--text-muted);text-decoration:none;">Home</a>
+        <span style="color:var(--text-muted);">/</span>
+        <span style="font-size:0.83rem;font-weight:600;color:var(--accent2);">Feature Selection</span>
+      </div>
+      <div class="hero-chip" style="background:rgba(6,182,212,0.1);color:var(--accent2);">🎯 Module 06 · Feature Selection</div>
+      <h1 class="hero-title">Correlation <span style="color:var(--accent2);">Analysis</span></h1>
+      <p class="hero-desc">Measure the strength and direction of linear relationships between features and the target — a cornerstone of filter-based feature selection.</p>
+    </div>
+  </div>
+</div>
+
+<div class="max-w" style="padding-top:48px;padding-bottom:80px;">
+  <div class="content-grid">
+    <div style="display:flex;flex-direction:column;gap:48px;">
+
+      <div data-aos="fade-up">
+        <div class="section-label">The Concept</div>
+        <h2 class="section-title">How <span class="g">Correlation Works</span></h2>
+        <p class="section-desc" style="margin-bottom:14px;">The <strong style="color:var(--text);">Pearson correlation coefficient (r)</strong> measures how linearly related two variables are. It ranges from -1 (perfect negative) through 0 (no relationship) to +1 (perfect positive).</p>
+        <p class="section-desc" style="margin-bottom:14px;">In feature selection, we typically: (1) remove features with low correlation to the target, and (2) remove one of two features that are highly correlated with each other (redundancy).</p>
+        <div class="formula-box">r = Σ[(xᵢ - x̄)(yᵢ - ȳ)] / √[Σ(xᵢ-x̄)² · Σ(yᵢ-ȳ)²]</div>
+      </div>
+
+      <div data-aos="fade-up">
+        <div class="section-label">Real-World Examples</div>
+        <h2 class="section-title">Correlation <span class="g">in Action</span></h2>
+        <div class="example-grid">
+          <div class="example-card">
+            <div class="example-tag">🏠 Real Estate</div>
+            <div class="example-title">House Price Prediction</div>
+            <div class="example-desc">Area (sqft) has r≈0.85 with price — strong positive correlation, keep it. Number of bathrooms may correlate with number of bedrooms (r≈0.9) — one of them is redundant, drop it.</div>
+          </div>
+          <div class="example-card">
+            <div class="example-tag">🏥 Medical</div>
+            <div class="example-title">Disease Risk Factors</div>
+            <div class="example-desc">Blood pressure and heart rate may both correlate with cardiovascular disease. But if they also correlate with each other (r=0.8), including both adds noise and multicollinearity.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE DEMO -->
+      <div data-aos="fade-up">
+        <div class="section-label">🎮 Interactive Demo</div>
+        <h2 class="section-title">Live Correlation <span class="g">Explorer</span></h2>
+        <p class="section-desc" style="margin-bottom:20px;">Click anywhere on the plot to add data points. Watch the Pearson r update in real time. Try to draw different patterns and see how r responds!</p>
+        
+        <div class="demo-card">
+          <div class="demo-header">
+            <div class="demo-dot" style="background:#ef4444;"></div>
+            <div class="demo-dot" style="background:#f59e0b;"></div>
+            <div class="demo-dot" style="background:#10b981;"></div>
+            <span style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-left:8px;">correlation_explorer.py</span>
+            <div style="margin-left:auto;display:flex;gap:8px;">
+              <button class="btn-outline" style="font-size:0.75rem;padding:5px 12px;" onclick="loadPreset('positive')">📈 Positive</button>
+              <button class="btn-outline" style="font-size:0.75rem;padding:5px 12px;" onclick="loadPreset('negative')">📉 Negative</button>
+              <button class="btn-outline" style="font-size:0.75px;padding:5px 12px;" onclick="loadPreset('none')">⭕ No Corr</button>
+              <button class="btn-outline" style="font-size:0.75rem;padding:5px 12px;" onclick="clearPoints()">🗑️ Clear</button>
+            </div>
+          </div>
+          <div class="demo-body">
+            <canvas id="corr-canvas" width="600" height="340" style="width:100%;cursor:crosshair;border-radius:12px;background:var(--surface2);display:block;" onclick="addPoint(event)"></canvas>
+            <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;">
+              <div style="flex:1;background:var(--surface2);border-radius:14px;padding:16px;text-align:center;min-width:120px;">
+                <div style="font-size:0.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;margin-bottom:4px;">Pearson r</div>
+                <div id="r-val" style="font-family:'Sora',sans-serif;font-weight:800;font-size:2rem;color:var(--accent);">—</div>
+              </div>
+              <div style="flex:1;background:var(--surface2);border-radius:14px;padding:16px;text-align:center;min-width:120px;">
+                <div style="font-size:0.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;margin-bottom:4px;">Strength</div>
+                <div id="r-strength" style="font-family:'Sora',sans-serif;font-weight:800;font-size:1rem;color:var(--accent2);">Add points</div>
+              </div>
+              <div style="flex:1;background:var(--surface2);border-radius:14px;padding:16px;text-align:center;min-width:120px;">
+                <div style="font-size:0.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;margin-bottom:4px;">Decision</div>
+                <div id="r-decision" style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.88rem;line-height:1.4;color:var(--text-muted);">—</div>
+              </div>
+              <div style="flex:1;background:var(--surface2);border-radius:14px;padding:16px;text-align:center;min-width:80px;">
+                <div style="font-size:0.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;margin-bottom:4px;">Points</div>
+                <div id="n-points" style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.4rem;color:var(--text);">0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HEATMAP DEMO -->
+      <div data-aos="fade-up">
+        <div class="section-label">Correlation Heatmap</div>
+        <h2 class="section-title">Reading a <span class="g">Correlation Matrix</span></h2>
+        <p class="section-desc" style="margin-bottom:16px;">A correlation matrix shows all pairwise correlations. The diagonal is always 1.0 (a feature is perfectly correlated with itself). Hover over any cell to see a detailed interpretation!</p>
+        <!-- Custom tooltip -->
+        <div id="heatmap-tooltip" style="
+          position:fixed; z-index:1000; pointer-events:none; display:none;
+          background:var(--surface); border:1.5px solid var(--border);
+          border-radius:14px; padding:12px 16px; box-shadow:var(--shadow-lg);
+          max-width:220px; transition:opacity 0.15s;
+        ">
+          <div id="ht-pair" style="font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--text-muted);margin-bottom:6px;"></div>
+          <div id="ht-val" style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.6rem;margin-bottom:4px;"></div>
+          <div id="ht-strength" style="font-size:0.78rem;font-weight:700;margin-bottom:4px;"></div>
+          <div id="ht-desc" style="font-size:0.76rem;color:var(--text-muted);line-height:1.55;"></div>
+        </div>
+        <div id="heatmap-container" style="overflow-x:auto;"></div>
+      </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="key-terms-box" data-aos="fade-left">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:16px;">🔑 Key Terms</div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Pearson r</div>
+          <div><div class="key-term-name">Pearson Correlation</div><div class="key-term-def">Measures linear relationship strength. Range: [-1, 1]. Only for continuous variables.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Spearman</div>
+          <div><div class="key-term-name">Spearman Rank</div><div class="key-term-def">Correlation based on ranks, not values. Works for non-linear monotonic relationships.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">Multicollinearity</div>
+          <div><div class="key-term-name">Multicollinearity</div><div class="key-term-def">When two features are highly correlated with each other — one becomes redundant.</div></div>
+        </div>
+        <div class="key-term-item">
+          <div class="key-term-badge">VIF</div>
+          <div><div class="key-term-name">Variance Inflation Factor</div><div class="key-term-def">Detects multicollinearity. VIF > 10 means the feature is highly redundant.</div></div>
+        </div>
+      </div>
+      <div class="card card-pad" data-aos="fade-left" data-aos-delay="100">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.9rem;margin-bottom:12px;color:var(--text);">📏 Interpretation Guide</div>
+        {% set guide = [('0.9–1.0','Very Strong','Keep (or drop if redundant)','#10b981'),('0.7–0.9','Strong','Likely useful feature','#34d399'),('0.5–0.7','Moderate','Consider keeping','#f59e0b'),('0.3–0.5','Weak','Depends on context','#fb923c'),('0.0–0.3','Negligible','Usually drop','#ef4444')] %}
+        {% for rng, label, action, col in guide %}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.8rem;">
+          <span style="font-family:'DM Mono',monospace;font-weight:700;color:{{ col }};">|r| {{ rng }}</span>
+          <span style="color:var(--text-muted);">{{ action }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let points = [];
+
+function addPoint(e) {
+  const canvas = document.getElementById('corr-canvas');
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const px = (e.clientX - rect.left) * scaleX;
+  const py = (e.clientY - rect.top) * scaleY;
+  // Convert to data coords (0-100)
+  const x = ((px - 40) / (canvas.width - 80)) * 100;
+  const y = 100 - ((py - 20) / (canvas.height - 60)) * 100;
+  if (x < 0 || x > 100 || y < 0 || y > 100) return;
+  points.push({ x, y });
+  drawCorr();
+}
+
+function clearPoints() { points = []; drawCorr(); }
+
+function loadPreset(type) {
+  points = [];
+  for (let i = 0; i < 25; i++) {
+    const x = 5 + Math.random() * 90;
+    let y;
+    if (type === 'positive') y = x * 0.8 + 10 + (Math.random()-0.5)*15;
+    else if (type === 'negative') y = 95 - x * 0.8 + (Math.random()-0.5)*15;
+    else y = 10 + Math.random() * 80;
+    points.push({ x, y: Math.max(0, Math.min(100, y)) });
+  }
+  drawCorr();
+}
+
+function pearson(pts) {
+  if (pts.length < 2) return NaN;
+  const n = pts.length;
+  const mx = pts.reduce((s,p)=>s+p.x,0)/n, my = pts.reduce((s,p)=>s+p.y,0)/n;
+  const num = pts.reduce((s,p)=>s+(p.x-mx)*(p.y-my),0);
+  const den = Math.sqrt(pts.reduce((s,p)=>s+(p.x-mx)**2,0)*pts.reduce((s,p)=>s+(p.y-my)**2,0));
+  return den===0 ? 0 : num/den;
+}
+
+function drawCorr() {
+  const canvas = document.getElementById('corr-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const PAD = { l:40, r:20, t:20, b:40 };
+  const isDark = document.documentElement.classList.contains('dark');
+  ctx.clearRect(0,0,W,H);
+
+  const toX = v => PAD.l + (v/100)*(W-PAD.l-PAD.r);
+  const toY = v => PAD.t + ((100-v)/100)*(H-PAD.t-PAD.b);
+
+  // Grid
+  ctx.strokeStyle = isDark?'rgba(255,255,255,0.05)':'rgba(0,0,0,0.05)';
+  for(let i=0;i<=4;i++){
+    const v=i*25;
+    ctx.beginPath();ctx.moveTo(toX(v),PAD.t);ctx.lineTo(toX(v),H-PAD.b);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(PAD.l,toY(v));ctx.lineTo(W-PAD.r,toY(v));ctx.stroke();
+  }
+  // Axes
+  ctx.strokeStyle=isDark?'rgba(255,255,255,0.2)':'rgba(0,0,0,0.2)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(PAD.l,PAD.t);ctx.lineTo(PAD.l,H-PAD.b);ctx.lineTo(W-PAD.r,H-PAD.b);ctx.stroke();
+  ctx.fillStyle=isDark?'rgba(255,255,255,0.35)':'rgba(0,0,0,0.35)';ctx.font='11px DM Mono,monospace';
+  ctx.fillText('x',W-16,H-PAD.b+4);ctx.fillText('y',PAD.l-12,PAD.t+4);
+
+  if (points.length >= 2) {
+    // Regression line
+    const mx=points.reduce((s,p)=>s+p.x,0)/points.length, my=points.reduce((s,p)=>s+p.y,0)/points.length;
+    const m=points.reduce((s,p)=>s+(p.x-mx)*(p.y-my),0)/points.reduce((s,p)=>s+(p.x-mx)**2,0.0001);
+    const b=my-m*mx;
+    const x0=0, x1=100, y0=m*x0+b, y1=m*x1+b;
+    ctx.beginPath();ctx.strokeStyle='rgba(79,70,229,0.5)';ctx.lineWidth=2;ctx.setLineDash([6,4]);
+    ctx.moveTo(toX(x0),toY(y0));ctx.lineTo(toX(x1),toY(y1));ctx.stroke();ctx.setLineDash([]);
+  }
+
+  // Points
+  points.forEach(p=>{
+    ctx.beginPath();ctx.arc(toX(p.x),toY(p.y),5,0,Math.PI*2);
+    ctx.fillStyle='rgba(6,182,212,0.85)';ctx.fill();
+    ctx.strokeStyle='white';ctx.lineWidth=1.5;ctx.stroke();
+  });
+
+  // Stats
+  document.getElementById('n-points').textContent = points.length;
+  if (points.length >= 2) {
+    const r = pearson(points);
+    const abs = Math.abs(r);
+    document.getElementById('r-val').textContent = r.toFixed(3);
+    document.getElementById('r-val').style.color = r>0.5?'#10b981':r<-0.5?'#ef4444':'#f59e0b';
+    const str = abs>0.9?'Very Strong':abs>0.7?'Strong':abs>0.5?'Moderate':abs>0.3?'Weak':'Negligible';
+    const dir = r>0.05?' (+)':r<-0.05?' (−)':'';
+    document.getElementById('r-strength').textContent = str+dir;
+    document.getElementById('r-decision').textContent = abs>0.5?'✅ Keep feature':'⚠️ Consider dropping';
+  } else {
+    document.getElementById('r-val').textContent='—';
+    document.getElementById('r-strength').textContent='Add ≥2 points';
+    document.getElementById('r-decision').textContent='—';
+  }
+}
+
+// HEATMAP
+function buildHeatmap() {
+  const features = ['area','rooms','age','price','distance'];
+  const corrs = [
+    [1.00, 0.85, -0.42, 0.91, -0.38],
+    [0.85, 1.00, -0.31, 0.78, -0.22],
+    [-0.42,-0.31, 1.00,-0.55, 0.41],
+    [0.91, 0.78,-0.55, 1.00,-0.47],
+    [-0.38,-0.22, 0.41,-0.47, 1.00]
+  ];
+  const n = features.length;
+
+  let html = `<table style="border-collapse:separate;border-spacing:4px;font-size:0.8rem;"><thead><tr>
+    <th style="padding:8px 14px;"></th>`;
+  features.forEach(f=>{
+    html+=`<th style="padding:8px 14px;font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--text-muted);font-weight:700;text-align:center;">${f}</th>`;
+  });
+  html+='</tr></thead><tbody>';
+
+  for(let i=0;i<n;i++){
+    html+=`<tr><td style="padding:8px 14px;font-family:'DM Mono',monospace;font-size:0.75rem;font-weight:700;color:var(--text-muted);white-space:nowrap;">${features[i]}</td>`;
+    for(let j=0;j<n;j++){
+      const v = corrs[i][j];
+      const abs = Math.abs(v);
+      const isDiag = i === j;
+      const bg = isDiag
+        ? 'var(--accent)'
+        : v > 0
+          ? `rgba(16,185,129,${0.15 + abs*0.65})`
+          : `rgba(239,68,68,${0.15 + abs*0.65})`;
+      const textColor = isDiag ? 'white' : abs > 0.5 ? 'white' : 'var(--text)';
+      html += `<td
+        class="hm-cell"
+        data-row="${i}" data-col="${j}" data-val="${v}"
+        data-fa="${features[i]}" data-fb="${features[j]}"
+        style="
+          padding:12px 16px;
+          text-align:center;
+          background:${bg};
+          color:${textColor};
+          font-family:'DM Mono',monospace;
+          font-weight:800;
+          font-size:0.85rem;
+          border-radius:10px;
+          cursor:pointer;
+          transition:transform 0.15s, box-shadow 0.15s, filter 0.15s;
+          user-select:none;
+        "
+        onmouseenter="showHeatmapTooltip(event,this)"
+        onmousemove="moveHeatmapTooltip(event)"
+        onmouseleave="hideHeatmapTooltip()"
+      >${v.toFixed(2)}</td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  document.getElementById('heatmap-container').innerHTML = html;
+}
+
+function getStrength(abs, isDiag) {
+  if (isDiag) return { label: 'Perfect (self)', color: 'var(--accent)', desc: 'A feature is always perfectly correlated with itself.' };
+  if (abs >= 0.9) return { label: 'Very Strong', color: '#10b981', desc: 'Extremely strong relationship. If predicting one, you almost know the other.' };
+  if (abs >= 0.7) return { label: 'Strong', color: '#34d399', desc: 'Strong relationship. Likely a very useful feature, but check for redundancy.' };
+  if (abs >= 0.5) return { label: 'Moderate', color: '#f59e0b', desc: 'Moderate relationship. Worth including in the model.' };
+  if (abs >= 0.3) return { label: 'Weak', color: '#fb923c', desc: 'Weak relationship. May not add much value — evaluate carefully.' };
+  return { label: 'Negligible', color: '#ef4444', desc: 'Near zero relationship. Consider dropping this feature.' };
+}
+
+function showHeatmapTooltip(e, cell) {
+  const v = parseFloat(cell.dataset.val);
+  const fa = cell.dataset.fa, fb = cell.dataset.fb;
+  const abs = Math.abs(v);
+  const isDiag = fa === fb;
+  const dir = isDiag ? '' : v > 0 ? ' · Positive ↑' : ' · Negative ↓';
+  const strength = getStrength(abs, isDiag);
+
+  document.getElementById('ht-pair').textContent = `${fa}  ↔  ${fb}`;
+  const valEl = document.getElementById('ht-val');
+  valEl.textContent = v.toFixed(2);
+  valEl.style.color = strength.color;
+  const strEl = document.getElementById('ht-strength');
+  strEl.textContent = strength.label + dir;
+  strEl.style.color = strength.color;
+  document.getElementById('ht-desc').textContent = strength.desc;
+
+  // Highlight cell
+  cell.style.transform = 'scale(1.12)';
+  cell.style.boxShadow = `0 6px 20px rgba(0,0,0,0.25)`;
+  cell.style.filter = 'brightness(1.12)';
+  cell.style.zIndex = '10';
+  cell.style.position = 'relative';
+
+  const tip = document.getElementById('heatmap-tooltip');
+  tip.style.display = 'block';
+  moveHeatmapTooltip(e);
+}
+
+function moveHeatmapTooltip(e) {
+  const tip = document.getElementById('heatmap-tooltip');
+  const offset = 18;
+  let left = e.clientX + offset;
+  let top = e.clientY + offset;
+  // Keep within viewport
+  if (left + 230 > window.innerWidth) left = e.clientX - 230 - offset;
+  if (top + 160 > window.innerHeight) top = e.clientY - 160 - offset;
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+}
+
+function hideHeatmapTooltip() {
+  document.getElementById('heatmap-tooltip').style.display = 'none';
+  document.querySelectorAll('.hm-cell').forEach(c => {
+    c.style.transform = '';
+    c.style.boxShadow = '';
+    c.style.filter = '';
+    c.style.zIndex = '';
+    c.style.position = '';
+  });
+}
+
+loadPreset('positive');
+buildHeatmap();
+</script>
+{% endblock %}
