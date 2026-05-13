@@ -54,27 +54,84 @@ h2.section-title .g {
 .btn-outline{color:#EC4899!important;border-color:#EC4899!important;}
 .btn-outline:hover{background:#EC489910!important;}
 
-.feature-chip {
-  display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px;
-  border-radius: 10px; font-family: 'DM Mono', monospace; font-size: 0.82rem;
-  font-weight: 700; cursor: grab; user-select: none; transition: all 0.2s;
-  border: 2px solid transparent;
+.domain-tab {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 20px; border-radius: 100px;
+  border: 2px solid #e2e8f0;
+  background: #ffffff;
+  color: #64748b;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700; font-size: 0.83rem;
+  cursor: pointer; transition: all 0.2s;
+  white-space: nowrap; outline: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  user-select: none;
 }
-.feature-chip:active { cursor: grabbing; transform: scale(1.05); }
-.drop-zone {
-  min-height: 54px; border: 2px dashed var(--border); border-radius: 12px;
-  display: flex; align-items: center; justify-content: center; padding: 8px 14px;
-  transition: all 0.2s; color: var(--text-muted); font-size: 0.82rem;
+html.dark .domain-tab {
+  border-color: rgba(255,255,255,0.12);
+  background: #1e2438;
+  color: #94a3b8;
 }
-.drop-zone.over { border-color: var(--accent); background: var(--accent-light); }
-.operator-btn {
-  padding: 8px 16px; border-radius: 10px; border: 2px solid var(--border);
-  background: var(--surface2); color: var(--text); font-weight: 700; cursor: pointer;
-  font-family: 'DM Mono', monospace; font-size: 1rem; transition: all 0.2s;
+.domain-tab:hover {
+  border-color: rgba(236,72,153,0.5);
+  color: #EC4899;
+  background: rgba(236,72,153,0.07);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(236,72,153,0.18);
 }
-.operator-btn.active { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
-.result-animate { animation: resultPop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
-@keyframes resultPop { from{transform:scale(0.8);opacity:0;} to{transform:scale(1);opacity:1;} }
+.domain-tab.active {
+  border-color: #EC4899;
+  background: linear-gradient(135deg, rgba(236,72,153,0.18), rgba(244,63,94,0.10));
+  color: #EC4899;
+  box-shadow: 0 4px 16px rgba(236,72,153,0.25);
+}
+.pair-card {
+  border: 2px solid #e2e8f0;
+  border-radius: 16px; padding: 18px 20px;
+  cursor: pointer; transition: all 0.22s;
+  background: #ffffff;
+  position: relative; overflow: hidden;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+}
+html.dark .pair-card {
+  border-color: rgba(255,255,255,0.10);
+  background: #151929;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+}
+.pair-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background: linear-gradient(90deg, #EC4899, #F43F5E);
+  transform: scaleX(0); transform-origin: left; transition: transform 0.25s;
+}
+.pair-card:hover {
+  border-color: rgba(236,72,153,0.55);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(236,72,153,0.18);
+}
+.pair-card:hover::before { transform: scaleX(1); }
+.pair-card.selected {
+  border-color: #EC4899;
+  background: rgba(236,72,153,0.05);
+  box-shadow: 0 6px 24px rgba(236,72,153,0.2);
+}
+html.dark .pair-card.selected { background: rgba(236,72,153,0.08); }
+.pair-card.selected::before { transform: scaleX(1); }
+.pair-card::after {
+  content: '→';
+  position: absolute; right: 14px; bottom: 12px;
+  font-size: 0.85rem; color: rgba(236,72,153,0.4);
+  transition: all 0.2s;
+}
+.pair-card:hover::after { color: #EC4899; transform: translateX(3px); }
+.pair-card.selected::after { color: #EC4899; content: '✓'; }
+.pair-feat-badge {
+  display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px;
+  border-radius: 7px; font-family: 'DM Mono', monospace; font-size: 0.75rem;
+  font-weight: 700; background: var(--surface2); color: var(--text);
+  border: 1.5px solid var(--border);
+}
+@keyframes resultPop { from{transform:scale(0.92);opacity:0;} to{transform:scale(1);opacity:1;} }
+.result-animate { animation: resultPop 0.35s cubic-bezier(0.34,1.56,0.64,1); }
 </style>
 {% endblock %}
 
@@ -131,86 +188,58 @@ h2.section-title .g {
       <!-- INTERACTIVE DEMO -->
       <div data-aos="fade-up">
         <div class="section-label">🎮 Interactive Demo</div>
-        <h2 class="section-title">Feature <span class="g">Interaction Builder</span></h2>
-        <p class="section-desc" style="margin-bottom:20px;">Drag a feature into each slot, choose an operator, and see the interaction feature created with sample values!</p>
-        
+        <h2 class="section-title">Domain-Based <span class="g">Interaction Explorer</span></h2>
+        <p class="section-desc" style="margin-bottom:20px;">Choose a real-world domain, then click any interaction pair to see what the engineered feature means, its formula, computed value, and why it helps the model.</p>
+
         <div class="demo-card">
           <div class="demo-header">
             <div class="demo-dot" style="background:#ef4444;"></div>
             <div class="demo-dot" style="background:#f59e0b;"></div>
             <div class="demo-dot" style="background:#10b981;"></div>
-            <span style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-left:8px;">interaction_builder.py</span>
+            <span style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-left:8px;">interaction_explorer.py</span>
           </div>
           <div class="demo-body">
-            
-            <!-- Features palette -->
-            <div style="margin-bottom:20px;">
-              <div class="section-label" style="margin-bottom:10px;">Available Features (drag to slots below)</div>
-              <div style="display:flex;flex-wrap:wrap;gap:8px;" id="palette">
-                {% set feats = [
-                  ('price','💰','rgba(79,70,229,0.12)','var(--accent)'),
-                  ('discount','🏷️','rgba(6,182,212,0.12)','var(--accent2)'),
-                  ('quantity','📦','rgba(16,185,129,0.12)','var(--accent3)'),
-                  ('ctr','📈','rgba(245,158,11,0.12)','#f59e0b'),
-                  ('age','👤','rgba(239,68,68,0.12)','#ef4444'),
-                  ('income','💵','rgba(168,85,247,0.12)','#a855f7'),
-                  ('rating','⭐','rgba(251,191,36,0.12)','#fbbf24'),
-                  ('visits','🔗','rgba(20,184,166,0.12)','#14b8a6')
-                ] %}
-                {% for name, icon, bg, col in feats %}
-                <div class="feature-chip" draggable="true" 
-                     data-name="{{ name }}" data-val="{{ range(10,100)|random }}"
-                     style="background:{{ bg }};color:{{ col }};border-color:{{ col }}30;"
-                     ondragstart="drag(event)">
-                  {{ icon }} {{ name }}
-                </div>
-                {% endfor %}
-              </div>
+
+            <!-- Domain tabs -->
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px;">
+              <div id="tab-ecommerce" onclick="setDomain('ecommerce',this)" style="display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:12px;border:2.5px solid #7C3AED;background:rgba(124,58,237,0.13);color:#7C3AED;font-family:'Sora',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 3px 14px rgba(124,58,237,0.22);user-select:none;">🛒 E-Commerce</div>
+              <div id="tab-healthcare" onclick="setDomain('healthcare',this)" style="display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:12px;border:2.5px solid #e2e8f0;background:#f8fafc;color:#64748b;font-family:'Sora',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.07);user-select:none;">🏥 Healthcare</div>
+              <div id="tab-finance" onclick="setDomain('finance',this)" style="display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:12px;border:2.5px solid #e2e8f0;background:#f8fafc;color:#64748b;font-family:'Sora',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.07);user-select:none;">💰 Finance</div>
+              <div id="tab-realestate" onclick="setDomain('realestate',this)" style="display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:12px;border:2.5px solid #e2e8f0;background:#f8fafc;color:#64748b;font-family:'Sora',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.07);user-select:none;">🏠 Real Estate</div>
             </div>
 
-            <!-- Builder row -->
-            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px;">
-              <div style="flex:1;min-width:140px;">
-                <div class="section-label" style="margin-bottom:6px;">Feature A</div>
-                <div class="drop-zone" id="slot-a" ondrop="drop(event,'a')" ondragover="allowDrop(event)" ondragleave="removeover(event)">
-                  Drop Feature A
-                </div>
-              </div>
-              <div style="text-align:center;padding-top:22px;">
-                <div style="display:flex;flex-direction:column;gap:6px;">
-                  <button class="operator-btn active" onclick="setOp('×',this)" id="op-mul">×</button>
-                  <button class="operator-btn" onclick="setOp('÷',this)" id="op-div">÷</button>
-                  <button class="operator-btn" onclick="setOp('+',this)" id="op-add">+</button>
-                  <button class="operator-btn" onclick="setOp('-',this)" id="op-sub">−</button>
-                </div>
-              </div>
-              <div style="flex:1;min-width:140px;">
-                <div class="section-label" style="margin-bottom:6px;">Feature B</div>
-                <div class="drop-zone" id="slot-b" ondrop="drop(event,'b')" ondragover="allowDrop(event)" ondragleave="removeover(event)">
-                  Drop Feature B
-                </div>
-              </div>
-              <div style="padding-top:22px;">
-                <button class="btn-primary" onclick="buildInteraction()">Build →</button>
-              </div>
-            </div>
+            <!-- Domain description -->
+            <div id="domain-desc" style="padding:10px 16px;border-radius:10px;background:var(--surface2);border-left:4px solid #EC4899;font-size:0.85rem;color:var(--text-muted);margin-bottom:18px;line-height:1.6;"></div>
 
-            <!-- Result -->
-            <div id="interaction-result" style="display:none; background:var(--surface2); border-radius:16px; padding:20px;">
-              <div class="section-label" style="margin-bottom:12px;">✨ New Interaction Feature Created</div>
-              <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-                <div style="background:var(--surface);border:1.5px solid var(--accent);border-radius:12px;padding:14px 20px;flex:1;min-width:200px;">
-                  <div style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:4px;">Feature Name</div>
-                  <div id="res-name" style="font-family:'Sora',sans-serif;font-weight:700;font-size:1.1rem;color:var(--accent);"></div>
+            <!-- Pair cards grid -->
+            <div id="pairs-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:22px;"></div>
+
+            <!-- Result panel -->
+            <div id="interaction-result" style="display:none;">
+              <div style="background:linear-gradient(135deg,rgba(236,72,153,0.07),rgba(244,63,94,0.05));border:2px solid rgba(236,72,153,0.25);border-radius:18px;padding:24px;" class="result-animate">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;">
+                  <div id="res-icon" style="font-size:1.8rem;"></div>
+                  <div>
+                    <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#EC4899;margin-bottom:2px;">New Interaction Feature</div>
+                    <div id="res-name" style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.2rem;color:var(--text);"></div>
+                  </div>
+                  <div id="res-val-pill" style="margin-left:auto;padding:8px 18px;border-radius:100px;background:rgba(236,72,153,0.12);border:1.5px solid rgba(236,72,153,0.3);font-family:'Sora',sans-serif;font-weight:800;font-size:1.3rem;color:#EC4899;"></div>
                 </div>
-                <div style="background:var(--surface);border:1.5px solid var(--accent3);border-radius:12px;padding:14px 20px;flex:1;min-width:140px;">
-                  <div style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:4px;">Sample Value</div>
-                  <div id="res-val" class="result-animate" style="font-family:'Sora',sans-serif;font-weight:700;font-size:1.4rem;color:var(--accent3);"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                  <div style="background:var(--surface);border-radius:12px;padding:14px;">
+                    <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:6px;">Formula</div>
+                    <div id="res-formula" style="font-family:'DM Mono',monospace;font-size:0.88rem;font-weight:700;color:#EC4899;"></div>
+                  </div>
+                  <div style="background:var(--surface);border-radius:12px;padding:14px;">
+                    <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:6px;">Python Code</div>
+                    <div id="res-code" style="font-family:'DM Mono',monospace;font-size:0.82rem;color:var(--text);"></div>
+                  </div>
                 </div>
-                <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:14px 20px;flex:2;min-width:200px;">
-                  <div style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:4px;">Python Code</div>
-                  <div id="res-code" style="font-family:'DM Mono',monospace;font-size:0.82rem;color:var(--text);"></div>
+                <div style="background:var(--surface);border-radius:12px;padding:14px;border-left:3px solid #10b981;">
+                  <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#10b981;margin-bottom:6px;">💡 Why This Interaction Matters</div>
+                  <div id="res-why" style="font-size:0.88rem;color:var(--text-muted);line-height:1.65;"></div>
                 </div>
+                <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;" id="res-inputs"></div>
               </div>
             </div>
           </div>
@@ -258,8 +287,8 @@ h2.section-title .g {
           <div><div class="key-term-name">Ratio Feature</div><div class="key-term-def">A / B — normalizes one feature by another, e.g. sales per employee.</div></div>
         </div>
         <div class="key-term-item">
-          <div class="key-term-badge">PolynomialFeatures</div>
-          <div><div class="key-term-name">sklearn PolynomialFeatures</div><div class="key-term-def">Auto-generates all pairwise interactions with degree=2 and interaction_only=True.</div></div>
+          <div class="key-term-badge" style="white-space:normal;word-break:break-word;max-width:90px;line-height:1.4;">PolynomialFeatures</div>
+          <div style="min-width:0;overflow:hidden;"><div class="key-term-name" style="word-break:break-word;">sklearn PolynomialFeatures</div><div class="key-term-def" style="word-break:break-word;">Auto-generates all pairwise interactions with degree=2 and interaction_only=True.</div></div>
         </div>
       </div>
       <div class="card card-pad" data-aos="fade-left" data-aos-delay="100">
@@ -280,48 +309,203 @@ h2.section-title .g {
 
 {% block extra_scripts %}
 <script>
-let slotA = null, slotB = null, currentOp = '×';
+const DOMAINS = {
+  ecommerce: {
+    desc: 'E-Commerce features — model a product listing dataset with price, discount, clicks, and purchase history.',
+    pairs: [
+      { icon:'💸', fa:'price', va:499, fb:'discount_pct', vb:0.20, op:'*', name:'effective_discount_value',
+        formula:'price × discount_pct', why:'A 20% discount on ₹499 = ₹99.8 off. This single number captures real savings better than either feature alone — it directly drives purchase decisions.' },
+      { icon:'📈', fa:'click_through_rate', va:0.045, fb:'price', vb:499, op:'*', name:'revenue_intent_score',
+        formula:'ctr × price', why:'High CTR on an expensive item = strong purchase intent. This interaction reveals potential high-value customers the model would miss by looking at CTR or price alone.' },
+      { icon:'🛒', fa:'cart_adds', va:320, fb:'purchases', vb:48, op:'/', name:'cart_to_purchase_ratio',
+        formula:'cart_adds / purchases', why:'How many carts lead to a purchase? A high ratio signals friction (bad UX, shipping cost shock). This ratio is a powerful churn and conversion signal.' },
+      { icon:'⭐', fa:'avg_rating', va:4.3, fb:'review_count', vb:850, op:'*', name:'rating_confidence_score',
+        formula:'avg_rating × review_count', why:'A 4.5 rating from 3 reviews vs 4.3 from 850 reviews — the interaction captures confidence. A single rating without volume is noise.' },
+      { icon:'🔁', fa:'purchase_frequency', va:3.2, fb:'avg_order_value', vb:1250, op:'*', name:'customer_lifetime_proxy',
+        formula:'purchase_frequency × avg_order_value', why:'Frequent buyers of high-value items are the most valuable customers. This interaction is a lightweight proxy for customer lifetime value (CLV).' },
+    ]
+  },
+  healthcare: {
+    desc: 'Healthcare features — model a patient risk dataset with vitals, demographics, and clinical measurements.',
+    pairs: [
+      { icon:'⚖️', fa:'weight_kg', va:78, fb:'height_m', vb:1.75, op:'/', name:'bmi_numerator',
+        formula:'weight / height²', why:'BMI = weight / height². Neither weight nor height alone predicts obesity risk. Their ratio is the medically validated signal doctors use for disease risk stratification.' },
+      { icon:'❤️', fa:'max_heart_rate', va:185, fb:'resting_hr', vb:72, op:'-', name:'heart_rate_reserve',
+        formula:'max_hr - resting_hr', why:'Heart Rate Reserve (HRR) measures cardiovascular fitness capacity. A high HRR means the heart has more range — a key feature for predicting exercise tolerance and cardiac risk.' },
+      { icon:'🩸', fa:'systolic_bp', va:130, fb:'diastolic_bp', vb:85, op:'-', name:'pulse_pressure',
+        formula:'systolic_bp - diastolic_bp', why:'Pulse pressure reflects arterial stiffness. A wide gap (>60 mmHg) indicates cardiovascular strain. Neither BP reading alone captures this important risk signal.' },
+      { icon:'🧪', fa:'fasting_glucose', va:108, fb:'insulin_level', vb:14, op:'*', name:'insulin_resistance_proxy',
+        formula:'glucose × insulin', why:'When both glucose and insulin are elevated simultaneously, it signals insulin resistance — the precursor to Type 2 diabetes. The product captures this joint dysfunction.' },
+      { icon:'🫁', fa:'age', va:55, fb:'smoking_years', vb:20, op:'*', name:'cumulative_exposure_risk',
+        formula:'age × smoking_years', why:'A 55-year-old who smoked for 20 years has greater lung damage than a 30-year-old who smoked for 20 years. The interaction captures cumulative biological exposure.' },
+    ]
+  },
+  finance: {
+    desc: 'Finance features — model a loan application dataset with income, debt, credit, and transaction history.',
+    pairs: [
+      { icon:'📊', fa:'total_debt', va:45000, fb:'annual_income', vb:720000, op:'/', name:'debt_to_income_ratio',
+        formula:'total_debt / annual_income', why:'DTI ratio is the most important feature in credit risk models. A ₹45k debt on ₹72k income is very different from the same debt on ₹7.2L income — the ratio captures affordability.' },
+      { icon:'💳', fa:'credit_utilization', va:0.42, fb:'credit_limit', vb:200000, op:'*', name:'outstanding_balance',
+        formula:'utilization × credit_limit', why:'42% utilization on ₹2L limit = ₹84k outstanding. This reconstructed balance is a direct delinquency signal — more interpretable than utilization percentage alone.' },
+      { icon:'🏦', fa:'monthly_transactions', va:28, fb:'avg_transaction_value', vb:3200, op:'*', name:'monthly_spending_volume',
+        formula:'transactions × avg_value', why:'Spending volume = frequency × amount. A customer spending ₹89.6k/month is very different from one spending ₹2.8k — the interaction reveals true engagement level.' },
+      { icon:'📉', fa:'num_late_payments', va:2, fb:'loan_tenure_months', vb:36, op:'/', name:'late_payment_rate',
+        formula:'late_payments / tenure', why:'2 late payments over 36 months is very different from 2 over 6 months. The rate normalises by time — a much fairer risk signal than the raw count.' },
+      { icon:'💰', fa:'revenue_growth_pct', va:0.18, fb:'profit_margin', vb:0.12, op:'*', name:'quality_growth_score',
+        formula:'revenue_growth × profit_margin', why:'Growing revenue at a loss is dangerous. Growing profitably at 18% with 12% margins is healthy. This interaction separates quality growth from unsustainable expansion.' },
+    ]
+  },
+  realestate: {
+    desc: 'Real Estate features — model a property price dataset with area, location, age, and amenity data.',
+    pairs: [
+      { icon:'📐', fa:'carpet_area_sqft', va:1200, fb:'num_floors', vb:3, op:'*', name:'total_built_up_volume',
+        formula:'carpet_area × num_floors', why:'A 1200 sqft single-floor vs 400 sqft per floor over 3 floors have the same area but very different utility. The product captures the total usable mass of the building.' },
+      { icon:'📍', fa:'distance_to_metro_km', va:0.8, fb:'price_per_sqft', vb:8500, op:'*', name:'location_price_premium',
+        formula:'metro_distance × price_per_sqft', why:'Properties near metro stations command higher prices. This interaction reveals whether the price premium is justified by proximity — a key signal for over/under-valuation.' },
+      { icon:'🏚️', fa:'property_age_years', va:12, fb:'maintenance_cost', vb:45000, op:'*', name:'depreciation_risk_score',
+        formula:'age × maintenance_cost', why:'An old property with high maintenance cost has compounding depreciation risk. A new property with the same maintenance cost is less concerning — the interaction captures this joint risk.' },
+      { icon:'🌳', fa:'num_amenities', va:8, fb:'monthly_maintenance_fee', vb:4500, op:'/', name:'amenity_value_ratio',
+        formula:'amenities / maintenance_fee', why:'8 amenities for ₹4500/month is excellent value; 2 amenities for the same fee is poor. This ratio benchmarks amenity quality against cost — crucial for buyer decisions.' },
+    ]
+  }
+};
 
-function drag(e) { e.dataTransfer.setData('name', e.target.dataset.name); e.dataTransfer.setData('val', e.target.dataset.val); }
-function allowDrop(e) { e.preventDefault(); e.currentTarget.classList.add('over'); }
-function removeover(e) { e.currentTarget.classList.remove('over'); }
+let activeDomain = 'ecommerce';
 
-function drop(e, slot) {
-  e.preventDefault();
-  e.currentTarget.classList.remove('over');
-  const name = e.dataTransfer.getData('name');
-  const val = e.dataTransfer.getData('val');
-  if (slot === 'a') { slotA = { name, val }; updateSlot('slot-a', name, val); }
-  else { slotB = { name, val }; updateSlot('slot-b', name, val); }
+const TAB_COLORS = {
+  ecommerce:  { color:'#7C3AED', bg:'rgba(124,58,237,0.12)', border:'#7C3AED', shadow:'rgba(124,58,237,0.2)' },
+  healthcare: { color:'#EC4899', bg:'rgba(236,72,153,0.12)', border:'#EC4899', shadow:'rgba(236,72,153,0.2)' },
+  finance:    { color:'#10B981', bg:'rgba(16,185,129,0.12)', border:'#10B981', shadow:'rgba(16,185,129,0.2)' },
+  realestate: { color:'#F59E0B', bg:'rgba(245,158,11,0.12)', border:'#F59E0B', shadow:'rgba(245,158,11,0.2)' },
+};
+const TAB_IDS = ['ecommerce','healthcare','finance','realestate'];
+
+function setDomain(key, btn) {
+  activeDomain = key;
+  // Reset all tabs to inactive style
+  TAB_IDS.forEach(id => {
+    const t = document.getElementById('tab-' + id);
+    if (!t) return;
+    t.style.border = '2.5px solid #e2e8f0';
+    t.style.background = '#f8fafc';
+    t.style.color = '#64748b';
+    t.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)';
+    t.style.transform = '';
+  });
+  // Set active tab
+  const c = TAB_COLORS[key];
+  const activeTab = document.getElementById('tab-' + key);
+  if (activeTab) {
+    activeTab.style.border = '2.5px solid ' + c.border;
+    activeTab.style.background = c.bg;
+    activeTab.style.color = c.color;
+    activeTab.style.boxShadow = '0 4px 16px ' + c.shadow;
+    activeTab.style.transform = 'translateY(-1px)';
+  }
+  document.getElementById('interaction-result').style.display = 'none';
+  renderPairs();
 }
 
-function updateSlot(id, name, val) {
-  const el = document.getElementById(id);
-  el.innerHTML = `<div style="text-align:center;"><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;color:var(--accent);">${name}</div><div style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text-muted);">sample: ${val}</div></div>`;
-  el.style.borderStyle = 'solid'; el.style.borderColor = 'var(--accent)'; el.style.background = 'var(--accent-light)';
+function renderPairs() {
+  const d = DOMAINS[activeDomain];
+  document.getElementById('domain-desc').textContent = d.desc;
+  document.getElementById('pairs-grid').innerHTML = d.pairs.map((p, i) => {
+    const opSym = p.op === '*' ? '×' : p.op === '/' ? '÷' : p.op;
+    return `
+    <div onclick="selectPair(${i})" id="pair-${i}"
+      style="border:2.5px solid #e2e8f0;border-radius:16px;padding:18px 20px;cursor:pointer;transition:all 0.22s;background:#ffffff;position:relative;overflow:hidden;box-shadow:0 3px 14px rgba(0,0,0,0.07);"
+      onmouseover="this.style.borderColor='#EC4899';this.style.boxShadow='0 8px 28px rgba(236,72,153,0.18)';this.style.transform='translateY(-3px)'"
+      onmouseout="if(!this.classList.contains('selected')){this.style.borderColor='#e2e8f0';this.style.boxShadow='0 3px 14px rgba(0,0,0,0.07)';this.style.transform=''}">
+
+      <!-- Top row: icon circle + feature name -->
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,rgba(236,72,153,0.15),rgba(244,63,94,0.10));display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;border:1.5px solid rgba(236,72,153,0.2);">
+          ${p.icon}
+        </div>
+        <div style="min-width:0;">
+          <div style="font-size:0.67rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:#EC4899;margin-bottom:2px;">New Feature</div>
+          <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.82rem;color:var(--text);line-height:1.3;word-break:break-word;">${p.name}</div>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div style="height:1px;background:var(--border);margin-bottom:12px;"></div>
+
+      <!-- Feature A op Feature B row -->
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+        <span style="
+          display:inline-flex;align-items:center;padding:5px 10px;
+          border-radius:8px;font-family:'DM Mono',monospace;font-size:0.75rem;font-weight:700;
+          background:rgba(79,70,229,0.09);color:var(--accent);border:1.5px solid rgba(79,70,229,0.2);">
+          ${p.fa}
+        </span>
+        <span style="
+          display:inline-flex;align-items:center;justify-content:center;
+          width:26px;height:26px;border-radius:50%;
+          background:linear-gradient(135deg,#EC4899,#F43F5E);
+          color:white;font-family:'DM Mono',monospace;font-size:0.85rem;font-weight:800;
+          flex-shrink:0;box-shadow:0 2px 8px rgba(236,72,153,0.35);">
+          ${opSym}
+        </span>
+        <span style="
+          display:inline-flex;align-items:center;padding:5px 10px;
+          border-radius:8px;font-family:'DM Mono',monospace;font-size:0.75rem;font-weight:700;
+          background:rgba(14,165,233,0.09);color:var(--sky,#0EA5E9);border:1.5px solid rgba(14,165,233,0.2);">
+          ${p.fb}
+        </span>
+      </div>
+
+      <!-- Click hint -->
+      <div style="margin-top:12px;font-size:0.72rem;color:var(--text-muted);display:flex;align-items:center;gap:4px;">
+        <span style="width:5px;height:5px;border-radius:50%;background:#EC4899;opacity:0.5;"></span>
+        Click to explore
+      </div>
+    </div>
+  `}).join('');
 }
 
-function setOp(op, btn) {
-  currentOp = op;
-  document.querySelectorAll('.operator-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
+function selectPair(i) {
+  // Reset all pair cards
+  document.querySelectorAll('[id^="pair-"]').forEach((c,idx) => {
+    c.classList.remove('selected');
+    c.style.borderColor = '#e2e8f0';
+    c.style.boxShadow = '0 3px 14px rgba(0,0,0,0.07)';
+    c.style.transform = '';
+    c.style.background = '#ffffff';
+  });
+  // Highlight selected
+  const sel = document.getElementById('pair-' + i);
+  if (sel) {
+    sel.classList.add('selected');
+    sel.style.borderColor = '#EC4899';
+    sel.style.boxShadow = '0 6px 28px rgba(236,72,153,0.25)';
+    sel.style.background = 'rgba(236,72,153,0.05)';
+  }
+  const p = DOMAINS[activeDomain].pairs[i];
+  const opSym = p.op === '*' ? '×' : p.op === '/' ? '÷' : p.op;
+  const pyOp = p.op;
+  let val = p.op === '*' ? p.va * p.vb : p.op === '/' ? (p.va / p.vb) : p.op === '+' ? p.va + p.vb : p.va - p.vb;
+  const fmtVal = Math.abs(val) >= 1000 ? val.toLocaleString('en-IN', {maximumFractionDigits:1}) : val.toFixed(3).replace(/\.?0+$/, '');
 
-function buildInteraction() {
-  if (!slotA || !slotB) { alert('Drop a feature into both slots first!'); return; }
-  const a = parseFloat(slotA.val), b = parseFloat(slotB.val);
-  let val, op_sym, py_op;
-  if (currentOp === '×') { val = a * b; py_op = '*'; }
-  else if (currentOp === '÷') { val = b !== 0 ? (a / b) : 'Inf'; py_op = '/'; }
-  else if (currentOp === '+') { val = a + b; py_op = '+'; }
-  else { val = a - b; py_op = '-'; }
-  const fname = `${slotA.name}_${py_op === '*' ? 'x' : py_op === '/' ? 'div' : py_op}_${slotB.name}`;
-  document.getElementById('res-name').textContent = fname;
-  document.getElementById('res-val').textContent = typeof val === 'number' ? val.toFixed(2) : val;
-  document.getElementById('res-code').textContent = `df['${fname}'] = df['${slotA.name}'] ${py_op} df['${slotB.name}']`;
+  document.getElementById('res-icon').textContent = p.icon;
+  document.getElementById('res-name').textContent = p.name;
+  document.getElementById('res-val-pill').textContent = fmtVal;
+  document.getElementById('res-formula').textContent = p.formula;
+  document.getElementById('res-code').textContent = "df['" + p.name + "'] = df['" + p.fa + "'] " + pyOp + " df['" + p.fb + "']";
+  document.getElementById('res-why').textContent = p.why;
+  document.getElementById('res-inputs').innerHTML = `
+    <div style="padding:6px 14px;border-radius:8px;background:var(--surface2);font-family:'DM Mono',monospace;font-size:0.8rem;"><span style="color:var(--text-muted);">${p.fa} = </span><strong style="color:var(--text);">${p.va}</strong></div>
+    <div style="padding:6px 14px;border-radius:8px;background:var(--surface2);font-family:'DM Mono',monospace;font-size:0.8rem;"><span style="color:var(--text-muted);">${p.fb} = </span><strong style="color:var(--text);">${p.vb}</strong></div>
+    <div style="padding:6px 14px;border-radius:8px;background:rgba(236,72,153,0.10);border:1px solid rgba(236,72,153,0.25);font-family:'DM Mono',monospace;font-size:0.8rem;"><span style="color:var(--text-muted);">${p.name} = </span><strong style="color:#EC4899;">${fmtVal}</strong></div>`;
+
   const res = document.getElementById('interaction-result');
   res.style.display = 'block';
+  res.querySelector('.result-animate').style.animation = 'none';
+  requestAnimationFrame(() => { res.querySelector('.result-animate').style.animation = ''; });
   res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
+
+// Init
+renderPairs();
 </script>
 {% endblock %}
