@@ -325,6 +325,10 @@ Write a 2-3 sentence warm, enthusiastic, personalised encouragement. Address the
         return jsonify({"message": "Amazing effort, GUVIan! Keep exploring and you'll master Feature Engineering! 🚀"})
 
 
+@app.route("/healthy")
+def healthy():
+    return "", 200
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
